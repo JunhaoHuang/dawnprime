@@ -65,7 +65,7 @@ KEX_AlgorithmInstance.h     Header file of KEX protocol (programming interface)
 
 1.  Overview
 
-    This directory contains the SHA3/SHAKE-based implementation of ZEN for
+    This directory contains the SHA3/SHAKE-based implementation of DAWNP for
     the 128-bit security level.
 
     Implementation family: Keccak (FIPS 202)

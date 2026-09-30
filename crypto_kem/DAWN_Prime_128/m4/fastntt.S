@@ -19,7 +19,7 @@
 .cpu cortex-m4
 .thumb
 #include "params.h"
-#define NTT_SCALE (ZEN_N / 256)
+#define NTT_SCALE (DAWNP_N / 256)
 // #######
 // #######
 // # NTT #

@@ -2,7 +2,7 @@
 Copyright (c) 2026 Yu Zhang.
 Organization: State Key Laboratory of Cyberspace Security Defense,Institute of Information Engineering, CAS
               School of Cyber Security, University of Chinese Academy of Sciences  
-File Description: Declares the ZEN key-encapsulation mechanism layer for the optimized ZEN-128 instance.
+File Description: Declares the DAWNP key-encapsulation mechanism layer for the optimized DAWNP-128 instance.
 */
 #include <stdint.h>
 #include <stdio.h>
@@ -17,28 +17,28 @@ int16_t montgomery_reduce(int32_t a)
     /* Only the low 16 bits of a*QINV are needed; compute them with unsigned
      * (wrapping) arithmetic so that large |a| does not overflow int32. */
     u = (int16_t)(uint16_t)((uint32_t)a * (uint32_t)QINV);
-    t = (int32_t)u * ZEN_Q;
+    t = (int32_t)u * DAWNP_Q;
     t = a - t;
     t >>= 16;
     return t;
 }
 
-/// @brief Barrett reduction modulo ZEN_Q
+/// @brief Barrett reduction modulo DAWNP_Q
 /// @param[in] a Any int16_t value
-/// @return r with r = a (mod ZEN_Q) and -ZEN_Q/2 <= r <= ZEN_Q/2
+/// @return r with r = a (mod DAWNP_Q) and -DAWNP_Q/2 <= r <= DAWNP_Q/2
 static inline int16_t barrett_reduce(int16_t a)
 {
     int32_t t;
-    const int32_t v = ((1 << 26) + ZEN_Q / 2) / ZEN_Q;
+    const int32_t v = ((1 << 26) + DAWNP_Q / 2) / DAWNP_Q;
 
     t = (v * a + (1 << 25)) >> 26;
-    return (int16_t)(a - t * ZEN_Q);
+    return (int16_t)(a - t * DAWNP_Q);
 }
 
-/// @brief Multiply two coefficients in the finite field modulo ZEN_Q using Montgomery reduction
+/// @brief Multiply two coefficients in the finite field modulo DAWNP_Q using Montgomery reduction
 /// @param[in] a First input coefficient
 /// @param[in] b Second input coefficient
-/// @return Product of a and b reduced modulo ZEN_Q
+/// @return Product of a and b reduced modulo DAWNP_Q
 static inline int16_t fqmul(int16_t a, int16_t b) 
 {
   return montgomery_reduce((int32_t)a * b);
@@ -50,9 +50,9 @@ void poly_ntt(int16_t *a)
     int16_t t, zeta;
 
     k = 1;
-    for(len = ZEN_N >> 1; len >= 4; len >>= 1) 
+    for(len = DAWNP_N >> 1; len >= 4; len >>= 1) 
     {
-        for(start = 0; start < ZEN_N; start = j + len) 
+        for(start = 0; start < DAWNP_N; start = j + len) 
         {
             zeta = f[k++];
             for(j = start; j < start + len; j++) 
@@ -71,9 +71,9 @@ void poly_ntt_mq(int16_t *a)
     int16_t t, zeta;
 
     k = 1;
-    for(len = ZEN_N >> 1; len >= 4; len >>= 1) 
+    for(len = DAWNP_N >> 1; len >= 4; len >>= 1) 
     {
-        for(start = 0; start < ZEN_N; start = j + len) 
+        for(start = 0; start < DAWNP_N; start = j + len) 
         {
             zeta = f[k++];
             for(j = start; j < start + len; j++) 
@@ -85,10 +85,10 @@ void poly_ntt_mq(int16_t *a)
         }
     }
 
-    for(j = 0; j < ZEN_N; j++)
+    for(j = 0; j < DAWNP_N; j++)
     {
         a[j] = fqmul(a[j], 171);
-        a[j] += (a[j] >> 15) & ZEN_Q;
+        a[j] += (a[j] >> 15) & DAWNP_Q;
     }
 }
 
@@ -98,9 +98,9 @@ void poly_intt(int16_t *a)
     int16_t t, zeta;
 
     k = 0;
-    for(len = 4; len <= ZEN_N >> 1; len <<= 1)
+    for(len = 4; len <= DAWNP_N >> 1; len <<= 1)
     {
-        for(start = 0; start < ZEN_N; start =j + len)
+        for(start = 0; start < DAWNP_N; start =j + len)
         {
             zeta = fn[k++];
             for(j = start; j < start + len; j++) 
@@ -109,7 +109,7 @@ void poly_intt(int16_t *a)
                 /* The sum path is never multiplied (and thus never reduced)
                  * inside the butterflies, so without this reduction it can
                  * double per layer and overflow int16_t. Barrett keeps it in
-                 * [-ZEN_Q/2, ZEN_Q/2] at every layer. */
+                 * [-DAWNP_Q/2, DAWNP_Q/2] at every layer. */
                 a[j] = barrett_reduce(t + a[j + len]);
                 a[j + len] = t - a[j + len];
                 a[j + len] = fqmul(zeta, a[j + len]);
@@ -117,7 +117,7 @@ void poly_intt(int16_t *a)
         }
     }
 
-    for(j = 0; j < ZEN_N; j++)
+    for(j = 0; j < DAWNP_N; j++)
     {
         a[j] = fqmul(a[j], fn[127]);
     }
@@ -169,13 +169,13 @@ static inline void base_mul(int16_t *r, int16_t *a, int16_t *b, int16_t zeta)
 void poly_basemul_ntt(int16_t *r,  int16_t *a,  int16_t *b)
 {
     unsigned int i;
-    for(i = 0; i < ZEN_N / 8; i++) 
+    for(i = 0; i < DAWNP_N / 8; i++) 
     {
         base_mul(r + 8 * i, a + 8 * i, b + 8 * i, f[64 + i]);
         base_mul(r + 8 * i + 4, a + 8 * i + 4, b + 8 * i + 4, -f[64 + i]);
     }
 }
-/// @brief Multiply two degree-3 polynomial blocks in the NTT domain with a given twiddle factor and reduce coefficients modulo ZEN_Q
+/// @brief Multiply two degree-3 polynomial blocks in the NTT domain with a given twiddle factor and reduce coefficients modulo DAWNP_Q
 /// @param[out] r Base address of output coefficient array of length 4
 /// @param[in] a Base address of first input coefficient array of length 4
 /// @param[in] b Base address of second input coefficient array of length 4
@@ -196,7 +196,7 @@ static inline void base_mul_mq(int16_t *r, int16_t *a, int16_t *b, int16_t zeta)
     r[0] = fqmul(r[0], zeta);
     r[0] += c0;
     r[0] = fqmul(r[0], 19);
-    r[0] += (r[0] >> 15) & ZEN_Q;
+    r[0] += (r[0] >> 15) & DAWNP_Q;
 
     r[1] = fqmul((a[2] + a[3]), (b[2] + b[3]));
     r[1] -= c2;
@@ -206,7 +206,7 @@ static inline void base_mul_mq(int16_t *r, int16_t *a, int16_t *b, int16_t zeta)
     r[1] -= c0;
     r[1] -= c1;
     r[1] = fqmul(r[1], 19);
-    r[1] += (r[1] >> 15) & ZEN_Q;
+    r[1] += (r[1] >> 15) & DAWNP_Q;
 
     r[2] = fqmul(c3, zeta);
     r[2] += c1;
@@ -214,7 +214,7 @@ static inline void base_mul_mq(int16_t *r, int16_t *a, int16_t *b, int16_t zeta)
     r[2] -= c0;
     r[2] -= c2;
     r[2] = fqmul(r[2], 19);
-    r[2] += (r[2] >> 15) & ZEN_Q;
+    r[2] += (r[2] >> 15) & DAWNP_Q;
 
     r[3] = fqmul((a[0] + a[3]), (b[0] + b[3]));
     r[3] -= c0;
@@ -223,13 +223,13 @@ static inline void base_mul_mq(int16_t *r, int16_t *a, int16_t *b, int16_t zeta)
     r[3] -= c1;
     r[3] -= c2;
     r[3] = fqmul(r[3], 19);
-    r[3] += (r[3] >> 15) & ZEN_Q;
+    r[3] += (r[3] >> 15) & DAWNP_Q;
 }
 
 void poly_basemul_ntt_mq(int16_t *r,  int16_t *a,  int16_t *b)
 {
     unsigned int i;
-    for(i = 0; i < ZEN_N / 8; i++) 
+    for(i = 0; i < DAWNP_N / 8; i++) 
     {
         base_mul_mq(r + 8 * i, a + 8 * i, b + 8 * i, f[64 + i]);
         base_mul_mq(r + 8 * i + 4, a + 8 * i + 4, b + 8 * i + 4, -f[64 + i]);
@@ -355,7 +355,7 @@ static void base_inv(int16_t *r, int16_t *a, int16_t zeta)
     t = fqmul(t, zeta);
     det += t;
     det = fqmul(det, 361);
-    det += (det >> 15) & ZEN_Q;
+    det += (det >> 15) & DAWNP_Q;
     det = qinv[det];
 
     r[0] = fqmul(r[0], det);
@@ -371,7 +371,7 @@ static void base_inv(int16_t *r, int16_t *a, int16_t zeta)
 void poly_baseinv_ntt(int16_t *r, int16_t *a)
 {
     unsigned int i;
-    for(i = 0; i < ZEN_N / 8; i++) 
+    for(i = 0; i < DAWNP_N / 8; i++) 
     {
         base_inv(r + 8 * i, a + 8 * i, f[64 + i]);
         base_inv(r + 8 * i + 4, a + 8 * i + 4, -f[64 + i]);

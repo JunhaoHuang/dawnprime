@@ -2,7 +2,7 @@
 Copyright (c) 2026 Yu Zhang.
 Organization: State Key Laboratory of Cyberspace Security Defense,Institute of Information Engineering, CAS
               School of Cyber Security, University of Chinese Academy of Sciences  
-File Description: Declares the ZEN key-encapsulation mechanism layer for the optimized ZEN-256 instance.
+File Description: Declares the DAWNP key-encapsulation mechanism layer for the optimized DAWNP-256 instance.
 */
 
 #ifndef KEM_ALGORITHM_INSTANCE_H
@@ -14,7 +14,7 @@ File Description: Declares the ZEN key-encapsulation mechanism layer for the opt
 
 // Set "ALGORITHM_INSTANCE" as your algorithm instance name (no more than 64 bytes)
 // Only letters, numbers, '-' or '_' are permitted
-#define ALGORITHM_INSTANCE "ZEN_256"
+#define ALGORITHM_INSTANCE "DAWNP_256"
 
 #ifdef __cplusplus
 extern "C"

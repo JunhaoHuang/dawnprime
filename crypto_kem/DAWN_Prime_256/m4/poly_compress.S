@@ -9,7 +9,7 @@
  * results back into one word.
  *
  * Contract used by the M4 backend:
- *   - a is 32-bit aligned and contains ZEN_N == 1024 coefficients;
+ *   - a is 32-bit aligned and contains DAWNP_N == 1024 coefficients;
  *   - poly_compress inputs are in [0, 768];
  *   - poly_decompress inputs are in [0, 255].
  */

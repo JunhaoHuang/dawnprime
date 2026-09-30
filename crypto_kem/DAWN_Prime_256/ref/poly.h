@@ -2,7 +2,7 @@
 Copyright (c) 2026 Yu Zhang.
 Organization: State Key Laboratory of Cyberspace Security Defense,Institute of Information Engineering, CAS
               School of Cyber Security, University of Chinese Academy of Sciences  
-File Description: Declares the ZEN key-encapsulation mechanism layer for the optimized ZEN-256 instance.
+File Description: Declares the DAWNP key-encapsulation mechanism layer for the optimized DAWNP-256 instance.
 */
 #ifndef POLY_H
 #define POLY_H
@@ -14,7 +14,7 @@ extern "C"
 {
 #endif
 
-    /// @brief Check whether a polynomial satisfies the inversion-failure condition modulo ZEN_Q
+    /// @brief Check whether a polynomial satisfies the inversion-failure condition modulo DAWNP_Q
     /// @param[in] a Base address of input polynomial coefficient array
     /// @return 1 if at least one checked coefficient block has zero sum, otherwise 0
     int check_poly_inv_Zq(int16_t *a);
@@ -108,12 +108,12 @@ extern "C"
     /// @return None
     void poly_ciphertext_unpack(int16_t *a, const uint8_t *pa);
 
-    /// @brief Compress polynomial coefficients from modulo ZEN_Q representation to 8-bit representation
+    /// @brief Compress polynomial coefficients from modulo DAWNP_Q representation to 8-bit representation
     /// @param[in,out] a Base address of polynomial coefficient array; replaced by compressed coefficients
     /// @return None
     void poly_compress(int16_t *a);
 
-    /// @brief Decompress polynomial coefficients from 8-bit representation to modulo ZEN_Q representation
+    /// @brief Decompress polynomial coefficients from 8-bit representation to modulo DAWNP_Q representation
     /// @param[in,out] a Base address of polynomial coefficient array; replaced by decompressed coefficients
     /// @return None
     void poly_decompress(int16_t *a);

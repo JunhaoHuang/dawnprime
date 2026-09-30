@@ -2,7 +2,7 @@
 Copyright (c) 2026 Yu Zhang.
 Organization: State Key Laboratory of Cyberspace Security Defense,Institute of Information Engineering, CAS
               School of Cyber Security, University of Chinese Academy of Sciences
-File Description: Declares the ZEN key-encapsulation mechanism layer for the optimized ZEN-128 instance.
+File Description: Declares the DAWNP key-encapsulation mechanism layer for the optimized DAWNP-128 instance.
 */
 #include <stdint.h>
 #include <stdio.h>
@@ -16,7 +16,7 @@ int check_poly_inv_Zq(int16_t *a)
 	unsigned int i;
     int32_t flag;
     uint32_t acc = 0;
-    for(i = 0; i < ZEN_N; i += 4)
+    for(i = 0; i < DAWNP_N; i += 4)
 	{
 		flag = a[i] + a[i + 1] + a[i + 2] + a[i + 3];
 		acc |= (((flag | (0u - flag)) >> 31) ^ 1u);
@@ -28,7 +28,7 @@ int check_poly_inv_Z2(int16_t *a)
 {
 	unsigned int i;
     uint32_t acc = 0;
-    for(i = 0; i < ZEN_N4; i++)
+    for(i = 0; i < DAWNP_N4; i++)
     {
         acc ^= a[i];
     }
@@ -232,36 +232,36 @@ static void mul_in_R2_128(int16_t *a, int16_t *b, int16_t *res)
 void FastInversion(int16_t *f_inv, int16_t *f)
 {
     unsigned int i, j;
-    int16_t k[ZEN_N4];
-    int16_t b[ZEN_N4] = {0};
-    int16_t tmp_f[2 * ZEN_N4];
-    int16_t tmp[ZEN_N4];
-    const size_t coeff_bytes = ZEN_N4 * sizeof(int16_t);
+    int16_t k[DAWNP_N4];
+    int16_t b[DAWNP_N4] = {0};
+    int16_t tmp_f[2 * DAWNP_N4];
+    int16_t tmp[DAWNP_N4];
+    const size_t coeff_bytes = DAWNP_N4 * sizeof(int16_t);
 
     memcpy(tmp_f, f, coeff_bytes);
-    memcpy(tmp_f + ZEN_N4, f, coeff_bytes);
+    memcpy(tmp_f + DAWNP_N4, f, coeff_bytes);
 
     k[0] = f[0];
-    for (i = 1; i < ZEN_N4; i++)
+    for (i = 1; i < DAWNP_N4; i++)
     {
         k[i] = f[i] ^ k[i - 1];
     }
 
-    memset(f_inv, 0, ZEN_N4 * sizeof(int16_t));
+    memset(f_inv, 0, DAWNP_N4 * sizeof(int16_t));
     f_inv[0] = 1;
 
     b[0] = 0;
-    for (i = 0; i < ZEN_N4; i++)
+    for (i = 0; i < DAWNP_N4; i++)
     {
         b[0] ^= k[i];
     }
 
-    for (i = 0; i < ZEN_N4; i++)
+    for (i = 0; i < DAWNP_N4; i++)
     {
         k[i] ^= (b[0] * f[i]);
     }
 
-    for (i = 1; i < ZEN_N4; i++)
+    for (i = 1; i < DAWNP_N4; i++)
     {
         k[i] = k[i] ^ k[i - 1];
     }
@@ -275,7 +275,7 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     memset(tmp, 0, 2 * sizeof(int16_t));
     for (i = 0; i < 2; i++)
     {
-        for (j = i; j < ZEN_N4; j += 2)
+        for (j = i; j < DAWNP_N4; j += 2)
         {
             tmp[i] ^= k[j];
         }
@@ -284,12 +284,12 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     mul_in_R2_2(f_inv, tmp, b);
     mul_in_R2_128(b, tmp_f, tmp);
 
-    for (j = 0; j < ZEN_N4; j++)
+    for (j = 0; j < DAWNP_N4; j++)
     {
         k[j] = k[j] ^ tmp[j];
     }
 
-    for (i = 2; i < ZEN_N4; i += 2)
+    for (i = 2; i < DAWNP_N4; i += 2)
     {
         for (j = i; j < i + 2; j++)
         {
@@ -313,7 +313,7 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     memset(tmp, 0, 4 * sizeof(int16_t));
     for (i = 0; i < 4; i++)
     {
-        for (j = i; j < ZEN_N4; j += 4)
+        for (j = i; j < DAWNP_N4; j += 4)
         {
             tmp[i] ^= k[j];
         }
@@ -322,12 +322,12 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     mul_in_R2_4(f_inv, tmp, b);
     mul_in_R2_128(b, tmp_f, tmp);
 
-    for (j = 0; j < ZEN_N4; j++)
+    for (j = 0; j < DAWNP_N4; j++)
     {
         k[j] = k[j] ^ tmp[j];
     }
 
-    for (i = 4; i < ZEN_N4; i += 4)
+    for (i = 4; i < DAWNP_N4; i += 4)
     {
         for (j = i; j < i + 4; j++)
         {
@@ -351,7 +351,7 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     memset(tmp, 0, 8 * sizeof(int16_t));
     for (i = 0; i < 8; i++)
     {
-        for (j = i; j < ZEN_N4; j += 8)
+        for (j = i; j < DAWNP_N4; j += 8)
         {
             tmp[i] ^= k[j];
         }
@@ -360,12 +360,12 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     mul_in_R2_8(f_inv, tmp, b);
     mul_in_R2_128(b, tmp_f, tmp);
 
-    for (j = 0; j < ZEN_N4; j++)
+    for (j = 0; j < DAWNP_N4; j++)
     {
         k[j] = k[j] ^ tmp[j];
     }
 
-    for (i = 8; i < ZEN_N4; i += 8)
+    for (i = 8; i < DAWNP_N4; i += 8)
     {
         for (j = i; j < i + 8; j++)
         {
@@ -389,7 +389,7 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     memset(tmp, 0, 16 * sizeof(int16_t));
     for (i = 0; i < 16; i++)
     {
-        for (j = i; j < ZEN_N4; j += 16)
+        for (j = i; j < DAWNP_N4; j += 16)
         {
             tmp[i] ^= k[j];
         }
@@ -398,12 +398,12 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     mul_in_R2_16(f_inv, tmp, b);
     mul_in_R2_128(b, tmp_f, tmp);
 
-    for (j = 0; j < ZEN_N4; j++)
+    for (j = 0; j < DAWNP_N4; j++)
     {
         k[j] = k[j] ^ tmp[j];
     }
 
-    for (i = 16; i < ZEN_N4; i += 16)
+    for (i = 16; i < DAWNP_N4; i += 16)
     {
         for (j = i; j < i + 16; j++)
         {
@@ -427,7 +427,7 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     memset(tmp, 0, 32 * sizeof(int16_t));
     for (i = 0; i < 32; i++)
     {
-        for (j = i; j < ZEN_N4; j += 32)
+        for (j = i; j < DAWNP_N4; j += 32)
         {
             tmp[i] ^= k[j];
         }
@@ -436,12 +436,12 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     mul_in_R2_32(f_inv, tmp, b);
     mul_in_R2_128(b, tmp_f, tmp);
 
-    for (j = 0; j < ZEN_N4; j++)
+    for (j = 0; j < DAWNP_N4; j++)
     {
         k[j] = k[j] ^ tmp[j];
     }
 
-    for (i = 32; i < ZEN_N4; i += 32)
+    for (i = 32; i < DAWNP_N4; i += 32)
     {
         for (j = i; j < i + 32; j++)
         {
@@ -465,7 +465,7 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     memset(tmp, 0, 64 * sizeof(int16_t));
     for (i = 0; i < 64; i++)
     {
-        for (j = i; j < ZEN_N4; j += 64)
+        for (j = i; j < DAWNP_N4; j += 64)
         {
             tmp[i] ^= k[j];
         }
@@ -474,12 +474,12 @@ void FastInversion(int16_t *f_inv, int16_t *f)
     mul_in_R2_64(f_inv, tmp, b);
     mul_in_R2_128(b, tmp_f, tmp);
 
-    for (j = 0; j < ZEN_N4; j++)
+    for (j = 0; j < DAWNP_N4; j++)
     {
         k[j] = k[j] ^ tmp[j];
     }
 
-    for (i = 64; i < ZEN_N4; i += 64)
+    for (i = 64; i < DAWNP_N4; i += 64)
     {
         for (j = i; j < i + 64; j++)
         {
@@ -500,17 +500,17 @@ void FastInversion(int16_t *f_inv, int16_t *f)
 
 void poly_generate_g(int16_t *a, const uint8_t *seed, uint8_t nonce)
 {
-    uint8_t buf[ZEN_N_LEN_BYTES*2];
+    uint8_t buf[DAWNP_N_LEN_BYTES*2];
 
-    zen_pseudoXOF(ZEN_N*2, seed, SEED_LEN_BYTES*8, buf, nonce);
+    dawnp_pseudoXOF(DAWNP_N*2, seed, SEED_LEN_BYTES*8, buf, nonce);
     cbd1(a, buf);
 }
 
 void poly_generate_f(int16_t *a, const uint8_t *seed, uint8_t nonce)
 {
-    uint8_t buf[ZEN_N_LEN_BYTES*4];
+    uint8_t buf[DAWNP_N_LEN_BYTES*4];
 
-    zen_pseudoXOF(ZEN_N*4, seed, SEED_LEN_BYTES*8, buf, nonce);
+    dawnp_pseudoXOF(DAWNP_N*4, seed, SEED_LEN_BYTES*8, buf, nonce);
     tenary3_16(a, buf);
 }
 
@@ -518,9 +518,9 @@ void poly_generate_f(int16_t *a, const uint8_t *seed, uint8_t nonce)
 
 void poly_generate_se(int16_t *a, const uint8_t *seed, uint8_t nonce)
 {
-    uint8_t buf[ZEN_N_LEN_BYTES*2];
+    uint8_t buf[DAWNP_N_LEN_BYTES*2];
 
-    zen_pseudoXOF(ZEN_N*2, seed, SEED_LEN_BYTES*8, buf, nonce);
+    dawnp_pseudoXOF(DAWNP_N*2, seed, SEED_LEN_BYTES*8, buf, nonce);
     cbd1(a, buf);
 }
 
@@ -571,7 +571,7 @@ void poly_secretkey_pack(uint8_t *ss, const int16_t *a)
 {
     unsigned int i, j, k;
 
-    for(i = 0; i < ZEN_N; i += 32)
+    for(i = 0; i < DAWNP_N; i += 32)
     {
         const int16_t *src = a + i;
         uint8_t *dst = ss + (i / 32) * 40;
@@ -597,7 +597,7 @@ void poly_secretkey_unpack(int16_t *a, const uint8_t *ss)
 {
     unsigned int i, j, k;
 
-    for(i = 0; i < ZEN_N; i += 32)
+    for(i = 0; i < DAWNP_N; i += 32)
     {
         int16_t *dst = a + i;
         const uint8_t *src = ss + (i / 32) * 40;
@@ -636,7 +636,7 @@ void poly_publickey_pack(uint8_t *pa, const int16_t *a)
     uint64_t res[77]  = {0};
 
     idx = 0;
-    for(i = 0; i < ZEN_N - 2; i += 5)
+    for(i = 0; i < DAWNP_N - 2; i += 5)
     {
         tmp[idx] =
               (uint64_t)(uint16_t)a[i]
@@ -648,8 +648,8 @@ void poly_publickey_pack(uint8_t *pa, const int16_t *a)
     }
 
     tmp[102] =
-          (uint64_t)(uint16_t)a[ZEN_N - 2]
-        + (uint64_t)(uint16_t)a[ZEN_N - 1] * pack_publickey_table[1];
+          (uint64_t)(uint16_t)a[DAWNP_N - 2]
+        + (uint64_t)(uint16_t)a[DAWNP_N - 1] * pack_publickey_table[1];
 
     idx = 0;
     for(i = 0; i < 100; i += 4)
@@ -667,7 +667,7 @@ void poly_publickey_pack(uint8_t *pa, const int16_t *a)
     res[idx++] = tmp[100] | ((tmp[102] & 0xFFFFULL) << 48);
     res[idx++] = tmp[101] | (((tmp[102] >> 16) & 0xFULL) << 48);
 
-    memcpy(pa, (const uint8_t *)res, ZEN_INDCPA_PUBLICKEY_LEN_BYTES);
+    memcpy(pa, (const uint8_t *)res, DAWNP_INDCPA_PUBLICKEY_LEN_BYTES);
 }
 
 static inline uint16_t divmod769_tail(uint64_t *x)
@@ -713,7 +713,7 @@ void poly_publickey_unpack(int16_t *a, const uint8_t *pa)
     uint64_t tmp[103] = {0};
     const uint64_t MASK48   = 0x0000FFFFFFFFFFFFULL;
 
-    memcpy((uint8_t *)res, pa, ZEN_INDCPA_PUBLICKEY_LEN_BYTES);
+    memcpy((uint8_t *)res, pa, DAWNP_INDCPA_PUBLICKEY_LEN_BYTES);
 
     idx = 76;
 
@@ -737,11 +737,11 @@ void poly_publickey_unpack(int16_t *a, const uint8_t *pa)
 
     for(i = 0; i < 2; i++)
     {
-        a[ZEN_N - 2 + i] = divmod769_tail(&tmp[102]);
+        a[DAWNP_N - 2 + i] = divmod769_tail(&tmp[102]);
     }
 
     idx = 0;
-    for(i = 0; i < ZEN_N - 2; i += 5)
+    for(i = 0; i < DAWNP_N - 2; i += 5)
     {
         int j;
 
@@ -792,7 +792,7 @@ void poly_ciphertext_pack(uint8_t *pa, const int16_t *a)
     memset(buf, 0, sizeof(buf));
 
     idx = 0;
-    for (i = 0; i < ZEN_N - 2; i += 5)
+    for (i = 0; i < DAWNP_N - 2; i += 5)
     {
         x =
               (uint64_t)(uint16_t)a[i]
@@ -815,8 +815,8 @@ void poly_ciphertext_pack(uint8_t *pa, const int16_t *a)
     }
 
     x =
-          (uint64_t)(uint16_t)a[ZEN_N - 2]
-        + (uint64_t)(uint16_t)a[ZEN_N - 1] * pack_ciphertext_table[1];
+          (uint64_t)(uint16_t)a[DAWNP_N - 2]
+        + (uint64_t)(uint16_t)a[DAWNP_N - 1] * pack_ciphertext_table[1];
 
     bitpos = PACK147_GROUPS * 36u;
     wi = bitpos >> 6;
@@ -828,7 +828,7 @@ void poly_ciphertext_pack(uint8_t *pa, const int16_t *a)
         buf[wi + 1u] |= x >> (64u - off);
     }
 
-    memcpy(pa, (const uint8_t *)buf, ZEN_INDCPA_CIPHERTEXT_LEN_BYTES);
+    memcpy(pa, (const uint8_t *)buf, DAWNP_INDCPA_CIPHERTEXT_LEN_BYTES);
 }
 
 void poly_ciphertext_unpack(int16_t *a, const uint8_t *pa)
@@ -840,10 +840,10 @@ void poly_ciphertext_unpack(int16_t *a, const uint8_t *pa)
     const uint64_t MASK15 = UINT64_C(0x7FFF);
 
     memset(buf, 0, sizeof(buf));
-    memcpy((uint8_t *)buf, pa, ZEN_INDCPA_CIPHERTEXT_LEN_BYTES);
+    memcpy((uint8_t *)buf, pa, DAWNP_INDCPA_CIPHERTEXT_LEN_BYTES);
 
     idx = 0;
-    for (i = 0; i < ZEN_N - 2; i += 5)
+    for (i = 0; i < DAWNP_N - 2; i += 5)
     {
         bitpos = idx * 36u;
         wi = bitpos >> 6;
@@ -886,17 +886,17 @@ void poly_ciphertext_unpack(int16_t *a, const uint8_t *pa)
     x &= MASK15;
 
     q = div147_u64(x, &r);
-    a[ZEN_N - 2] = (int16_t)r;
+    a[DAWNP_N - 2] = (int16_t)r;
 
     q = div147_u64(q, &r);
-    a[ZEN_N - 1] = (int16_t)r;
+    a[DAWNP_N - 1] = (int16_t)r;
 }
 
 void poly_compress(int16_t *a)
 {
     unsigned int i;
     uint32_t d;
-    for(i = 0; i < ZEN_N; i++)
+    for(i = 0; i < DAWNP_N; i++)
     {
         d = a[i] * 12528;
         d >>= 16;
@@ -908,7 +908,7 @@ void poly_decompress(int16_t *a)
 {
     unsigned int i;
     uint32_t d;
-    for(i = 0; i < ZEN_N; i++)
+    for(i = 0; i < DAWNP_N; i++)
     {
         d = a[i] * 342838;
         d >>= 16;

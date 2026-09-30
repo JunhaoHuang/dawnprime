@@ -2,7 +2,7 @@
 Copyright (c) 2026 Yu Zhang.
 Organization: State Key Laboratory of Cyberspace Security Defense,Institute of Information Engineering, CAS
               School of Cyber Security, University of Chinese Academy of Sciences  
-File Description: Declares the ZEN key-encapsulation mechanism layer for the optimized ZEN-128 instance.
+File Description: Declares the DAWNP key-encapsulation mechanism layer for the optimized DAWNP-128 instance.
 */
 #ifndef PKE_H
 #define PKE_H

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 COMMON = Path(__file__).resolve().parent
 GENERATOR = COMMON / "gen_r2_radix16_mul.py"
 GENERATED = COMMON / "r2_radix16_mul_generated.inc"
-SCHEMES = ("ZEN-128", "ZEN-256", "DAWN_Prime_128", "DAWN_Prime_256")
+SCHEMES = ("DAWN_Prime_128", "DAWN_Prime_256")
 PUBLIC = tuple(f"r2_radix16_mul_{n}_asm" for n in (2, 4, 8, 16, 32, 64, 128, 256, 512)) + (
     "r2_radix16_mul_256x128_asm",
     "r2_radix16_mul_512x256_asm",

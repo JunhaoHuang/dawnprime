@@ -1,7 +1,7 @@
 # Shared Cortex-M4 radix-16 R2 multiplication
 
 `gen_r2_radix16_mul.py` deterministically generates the loop-free multiplication
-include used by ZEN-128, ZEN-256, DAWN_Prime_128, and DAWN_Prime_256.  The code
+include used by DAWN_Prime_128 and DAWN_Prime_256.  The code
 was derived independently from the local scalar ring operation; no assembly was
 copied from the unlicensed upstream R3 repository.
 

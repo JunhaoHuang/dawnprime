@@ -2,7 +2,7 @@
 Copyright (c) 2026 Yu Zhang.
 Organization: State Key Laboratory of Cyberspace Security Defense,Institute of Information Engineering, CAS
               School of Cyber Security, University of Chinese Academy of Sciences  
-File Description: Declares the ZEN key-encapsulation mechanism layer for the optimized ZEN-256 instance.
+File Description: Declares the DAWNP key-encapsulation mechanism layer for the optimized DAWNP-256 instance.
 */
 #ifndef NTT_H
 #define NTT_H
@@ -41,7 +41,7 @@ extern "C"
         337, 638, 143, 362, 223, 16, 640, 308, 120, 250, 3, 583, 408, 81, 164, 655
     };
 
-    static const int16_t qinv[ZEN_Q] = 
+    static const int16_t qinv[DAWNP_Q] = 
     {
         0, 1, 385, 513, 577, 154, 641, 110, 673, 171, 77, 70, 705, 355, 55, 564, 
         721, 181, 470, 81, 423, 293, 35, 535, 737, 646, 562, 57, 412, 716, 282, 645, 
@@ -94,9 +94,9 @@ extern "C"
         768
     };
 
-    /// @brief Reduce a 32-bit integer modulo ZEN_Q using Montgomery reduction
+    /// @brief Reduce a 32-bit integer modulo DAWNP_Q using Montgomery reduction
     /// @param[in] a Input 32-bit integer to be reduced
-    /// @return 16-bit integer reduced modulo ZEN_Q in Montgomery domain
+    /// @return 16-bit integer reduced modulo DAWNP_Q in Montgomery domain
     int16_t montgomery_reduce(int32_t a);
 
     /// @brief Compute the forward Number Theoretic Transform (NTT) of a polynomial
@@ -104,8 +104,8 @@ extern "C"
     /// @return None
     void poly_ntt(int16_t *a);
 
-    /// @brief Compute the forward Number Theoretic Transform (NTT) of a polynomial and map coefficients into the standard range modulo ZEN_Q
-    /// @param[in,out] a Base address of input polynomial coefficient array; replaced by its NTT representation with coefficients reduced modulo ZEN_Q
+    /// @brief Compute the forward Number Theoretic Transform (NTT) of a polynomial and map coefficients into the standard range modulo DAWNP_Q
+    /// @param[in,out] a Base address of input polynomial coefficient array; replaced by its NTT representation with coefficients reduced modulo DAWNP_Q
     /// @return None
     void poly_ntt_mq(int16_t *a);
 
@@ -121,7 +121,7 @@ extern "C"
     /// @return None
     void poly_basemul_ntt(int16_t *r, int16_t *a, int16_t *b);
 
-    /// @brief Perform block-wise polynomial multiplication in the NTT domain and map coefficients into the standard range modulo ZEN_Q
+    /// @brief Perform block-wise polynomial multiplication in the NTT domain and map coefficients into the standard range modulo DAWNP_Q
     /// @param[out] r Base address of output polynomial coefficient array
     /// @param[in] a Base address of first input polynomial coefficient array in NTT domain
     /// @param[in] b Base address of second input polynomial coefficient array in NTT domain

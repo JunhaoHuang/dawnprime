@@ -18,7 +18,7 @@ int main(void) {
     uint64_t t0;
     uint64_t t1;
 	int32_t i,nonce = 0;
-    int16_t a[ZEN_N], b[ZEN_N], res[ZEN_N];
+    int16_t a[DAWNP_N], b[DAWNP_N], res[DAWNP_N];
 
     hal_setup(CLOCK_BENCHMARK);
     hal_send_str("==========================");

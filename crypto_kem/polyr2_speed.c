@@ -29,19 +29,19 @@ static void fail_and_halt(const char *reason)
 #if defined(__has_include)
 #if __has_include("radix16_r2.h")
 #include "radix16_r2.h"
-#define ZENSPEED_HAVE_RADIX16 1
+#define DAWNPSPEED_HAVE_RADIX16 1
 #endif
 #endif
 
-#ifndef ZENSPEED_HAVE_RADIX16
-#define ZENSPEED_HAVE_RADIX16 0
+#ifndef DAWNPSPEED_HAVE_RADIX16
+#define DAWNPSPEED_HAVE_RADIX16 0
 #endif
 
-#if ZEN_N != 512 && ZEN_N != 1024
+#if DAWNP_N != 512 && DAWNP_N != 1024
 #error "polyr2_speed supports only DAWN_Prime_128 and DAWN_Prime_256"
 #endif
 
-#if !ZENSPEED_HAVE_RADIX16
+#if !DAWNPSPEED_HAVE_RADIX16
 
 /*
  * Benchmark-only cyclic R2 multipliers for the FastInversion levels that
@@ -122,7 +122,7 @@ DEFINE_MUL_IN_R2_SMALL(64, UINT64_MAX)
 DEFINE_MUL_IN_R2_LARGE(128, 2)
 
 /* DAWN_Prime_128 already exports mul_in_R2_256 from ref/poly.c. */
-#if ZEN_N == 1024
+#if DAWNP_N == 1024
 DEFINE_MUL_IN_R2_LARGE(256, 4)
 #endif
 
@@ -147,7 +147,7 @@ extern void r2_radix16_mul_256_asm(uint32_t *res, const uint32_t *a,
 extern void r2_radix16_mul_512_asm(uint32_t *res, const uint32_t *a,
                                    const uint32_t *b);
 
-#if ZEN_N == 512
+#if DAWNP_N == 512
 extern void r2_radix16_mul_256x128_asm(uint32_t *res, const uint32_t *a,
                                        const uint32_t *b);
 #else
@@ -172,21 +172,21 @@ int main(void)
     uint64_t t1;
     unsigned int attempt;
     int32_t iteration;
-    int16_t a[ZEN_N];
-    int16_t b[ZEN_N];
+    int16_t a[DAWNP_N];
+    int16_t b[DAWNP_N];
 
-#if ZENSPEED_HAVE_RADIX16
+#if DAWNPSPEED_HAVE_RADIX16
     uint32_t rad_a_2[R2_RADIX16_WORDS(2)];
     uint32_t rad_b_2[R2_RADIX16_WORDS(2)];
-    uint32_t rad_a[R2_RADIX16_WORDS(ZEN_N2)];
-    uint32_t rad_b[R2_RADIX16_WORDS(ZEN_N2)];
-    uint32_t rad_res[R2_RADIX16_WORDS(ZEN_N2)];
-    uint32_t inv_in[R2_RADIX16_WORDS(ZEN_N4)];
-    uint32_t inv_res[R2_RADIX16_WORDS(ZEN_N4)];
+    uint32_t rad_a[R2_RADIX16_WORDS(DAWNP_N2)];
+    uint32_t rad_b[R2_RADIX16_WORDS(DAWNP_N2)];
+    uint32_t rad_res[R2_RADIX16_WORDS(DAWNP_N2)];
+    uint32_t inv_in[R2_RADIX16_WORDS(DAWNP_N4)];
+    uint32_t inv_res[R2_RADIX16_WORDS(DAWNP_N4)];
 #else
-    int16_t res[ZEN_N2];
-    int16_t inv_in[ZEN_N4];
-    int16_t inv_res[ZEN_N4];
+    int16_t res[DAWNP_N2];
+    int16_t inv_in[DAWNP_N4];
+    int16_t inv_res[DAWNP_N4];
 #endif
 
     hal_setup(CLOCK_BENCHMARK);
@@ -194,21 +194,21 @@ int main(void)
 
     /* Prepare deterministic, valid inputs outside all timed regions. */
     for (attempt = 0; attempt < 256u; attempt++) {
-#if !ZENSPEED_HAVE_RADIX16
+#if !DAWNPSPEED_HAVE_RADIX16
         unsigned int i;
 #endif
 
         poly_generate_f(a, speed_seed, (uint8_t)attempt);
-#if ZENSPEED_HAVE_RADIX16
+#if DAWNPSPEED_HAVE_RADIX16
         if (poly_xor4_radix16(inv_in, a) == 0) {
             break;
         }
 #else
-        for (i = 0; i < ZEN_N4; i++) {
+        for (i = 0; i < DAWNP_N4; i++) {
             inv_in[i] = (int16_t)(((uint16_t)a[i] & 1u)
-                       ^ ((uint16_t)a[i + ZEN_N4] & 1u)
-                       ^ ((uint16_t)a[i + 2u * ZEN_N4] & 1u)
-                       ^ ((uint16_t)a[i + 3u * ZEN_N4] & 1u));
+                       ^ ((uint16_t)a[i + DAWNP_N4] & 1u)
+                       ^ ((uint16_t)a[i + 2u * DAWNP_N4] & 1u)
+                       ^ ((uint16_t)a[i + 3u * DAWNP_N4] & 1u));
         }
         if (check_poly_inv_Z2(inv_in) == 0) {
             break;
@@ -221,15 +221,15 @@ int main(void)
 
     poly_generate_g(b, speed_seed, 0x80u);
 
-#if ZENSPEED_HAVE_RADIX16
+#if DAWNPSPEED_HAVE_RADIX16
     r2_radix16_pack(rad_a_2, a, 2);
     r2_radix16_pack(rad_b_2, b, 2);
-    r2_radix16_pack(rad_a, a, ZEN_N2);
-    r2_radix16_pack(rad_b, b, ZEN_N2);
+    r2_radix16_pack(rad_a, a, DAWNP_N2);
+    r2_radix16_pack(rad_b, b, DAWNP_N2);
 #endif
 
     for (iteration = 0; iteration < ITERATIONS; iteration++) {
-#if ZENSPEED_HAVE_RADIX16
+#if DAWNPSPEED_HAVE_RADIX16
         BENCHMARK_CALL("r2_radix16_mul 2 cycles:",
                        r2_radix16_mul_2_asm(rad_res, rad_a_2, rad_b_2),
                        rad_res[0]);
@@ -255,7 +255,7 @@ int main(void)
                        r2_radix16_mul_256_asm(rad_res, rad_a, rad_b),
                        rad_res[0]);
 
-#if ZEN_N == 1024
+#if DAWNP_N == 1024
         BENCHMARK_CALL("r2_radix16_mul 512 cycles:",
                        r2_radix16_mul_512_asm(rad_res, rad_a, rad_b),
                        rad_res[0]);
@@ -288,7 +288,7 @@ int main(void)
         BENCHMARK_CALL("mul_in_R2_256 cycles:",
                        mul_in_R2_256(a, b, res), res[0]);
 
-#if ZEN_N == 1024
+#if DAWNP_N == 1024
         BENCHMARK_CALL("mul_in_R2_512 cycles:",
                        mul_in_R2_512(a, b, res), res[0]);
 #endif

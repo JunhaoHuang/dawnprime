@@ -311,17 +311,17 @@ class BenchmarkToLatexTests(unittest.TestCase):
 
     def test_top_level_experiments_and_named_variants_are_excluded(self) -> None:
         log = completed_log("keypair cycles:", "1")
-        self.write("speed_crypto_kem_ZEN-128_m4.txt", log)
-        self.write("speed_crypto_kem_ZEN-512_m4_direct_baseinv.txt", log)
-        self.write("zenspeed_crypto_kem_ZEN-512_ref_origin.txt", log)
+        self.write("speed_crypto_kem_DAWNP-128_m4.txt", log)
+        self.write("speed_crypto_kem_DAWNP-512_m4_direct_baseinv.txt", log)
+        self.write("dawnpspeed_crypto_kem_DAWNP-512_ref_origin.txt", log)
 
         specs, skipped = benchmark.discover_logs(self.input_dir)
 
         self.assertEqual(specs, [])
         reasons = {item.source: item.reason for item in skipped}
-        self.assertIn("top-level speed experiment", reasons["speed_crypto_kem_ZEN-128_m4.txt"])
-        self.assertIn("direct_baseinv", reasons["speed_crypto_kem_ZEN-512_m4_direct_baseinv.txt"])
-        self.assertIn("ref_origin", reasons["zenspeed_crypto_kem_ZEN-512_ref_origin.txt"])
+        self.assertIn("top-level speed experiment", reasons["speed_crypto_kem_DAWNP-128_m4.txt"])
+        self.assertIn("direct_baseinv", reasons["speed_crypto_kem_DAWNP-512_m4_direct_baseinv.txt"])
+        self.assertIn("ref_origin", reasons["dawnpspeed_crypto_kem_DAWNP-512_ref_origin.txt"])
 
     def test_macro_name_collision_is_rejected(self) -> None:
         log = completed_log("poly_ntt cycles:", "1")

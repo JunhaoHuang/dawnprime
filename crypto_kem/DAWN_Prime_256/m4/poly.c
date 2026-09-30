@@ -37,13 +37,13 @@ static uint32_t r2_radix16_prefix_word(uint32_t x, uint32_t carry)
     return x ^ (R2_RADIX16_LANE_MASK & (0u - (carry & 1u)));
 }
 
-static void r2_radix16_prefix_xor_n4_fixed(uint32_t out[R2_RADIX16_WORDS(ZEN_N4)],
-                                            const uint32_t in[R2_RADIX16_WORDS(ZEN_N4)])
+static void r2_radix16_prefix_xor_n4_fixed(uint32_t out[R2_RADIX16_WORDS(DAWNP_N4)],
+                                            const uint32_t in[R2_RADIX16_WORDS(DAWNP_N4)])
 {
     uint32_t carry = 0;
     unsigned int i;
 
-    for (i = 0; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+    for (i = 0; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
         uint32_t word = r2_radix16_prefix_word(in[i], carry);
 
         out[i] = word;
@@ -51,41 +51,41 @@ static void r2_radix16_prefix_xor_n4_fixed(uint32_t out[R2_RADIX16_WORDS(ZEN_N4)
     }
 }
 
-static uint32_t r2_radix16_parity_n4_fixed(const uint32_t a[R2_RADIX16_WORDS(ZEN_N4)])
+static uint32_t r2_radix16_parity_n4_fixed(const uint32_t a[R2_RADIX16_WORDS(DAWNP_N4)])
 {
     uint32_t acc = 0;
     unsigned int i;
 
-    for (i = 0; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+    for (i = 0; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
         acc ^= a[i];
     }
     return r2_radix16_word_parity(acc);
 }
 
-static void r2_radix16_xor_mask_n4_fixed(uint32_t dst[R2_RADIX16_WORDS(ZEN_N4)],
-                                          const uint32_t src[R2_RADIX16_WORDS(ZEN_N4)],
+static void r2_radix16_xor_mask_n4_fixed(uint32_t dst[R2_RADIX16_WORDS(DAWNP_N4)],
+                                          const uint32_t src[R2_RADIX16_WORDS(DAWNP_N4)],
                                           uint32_t bit)
 {
     uint32_t mask = 0u - (bit & 1u);
     unsigned int i;
 
-    for (i = 0; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+    for (i = 0; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
         dst[i] ^= src[i] & R2_RADIX16_LANE_MASK & mask;
     }
 }
 
-static void r2_radix16_zero_tail_n4(uint32_t a[R2_RADIX16_WORDS(ZEN_N4)],
+static void r2_radix16_zero_tail_n4(uint32_t a[R2_RADIX16_WORDS(DAWNP_N4)],
                                      unsigned int words)
 {
     unsigned int i;
 
-    for (i = words; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+    for (i = words; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
         a[i] = 0;
     }
 }
 
-static void r2_radix16_fold_n4_fixed(uint32_t out[R2_RADIX16_WORDS(ZEN_N4)],
-                                      const uint32_t in[R2_RADIX16_WORDS(ZEN_N4)],
+static void r2_radix16_fold_n4_fixed(uint32_t out[R2_RADIX16_WORDS(DAWNP_N4)],
+                                      const uint32_t in[R2_RADIX16_WORDS(DAWNP_N4)],
                                       unsigned int out_n)
 {
     unsigned int i, j;
@@ -95,7 +95,7 @@ static void r2_radix16_fold_n4_fixed(uint32_t out[R2_RADIX16_WORDS(ZEN_N4)],
         uint32_t even = 0;
         uint32_t odd = 0;
 
-        for (i = 0; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+        for (i = 0; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
             uint32_t word = in[i] & R2_RADIX16_LANE_MASK;
 
             even ^= word ^ (word >> 8) ^ (word >> 16) ^ (word >> 24);
@@ -105,7 +105,7 @@ static void r2_radix16_fold_n4_fixed(uint32_t out[R2_RADIX16_WORDS(ZEN_N4)],
     } else if (out_n == 4u) {
         uint32_t acc = 0;
 
-        for (i = 0; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+        for (i = 0; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
             uint32_t word = in[i] & R2_RADIX16_LANE_MASK;
 
             acc ^= word ^ (word >> 16);
@@ -114,7 +114,7 @@ static void r2_radix16_fold_n4_fixed(uint32_t out[R2_RADIX16_WORDS(ZEN_N4)],
     } else if (out_n == 8u) {
         uint32_t acc = 0;
 
-        for (i = 0; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+        for (i = 0; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
             acc ^= in[i];
         }
         out[0] = acc & R2_RADIX16_LANE_MASK;
@@ -124,7 +124,7 @@ static void r2_radix16_fold_n4_fixed(uint32_t out[R2_RADIX16_WORDS(ZEN_N4)],
         for (i = 0; i < step_words; i++) {
             uint32_t acc = 0;
 
-            for (j = i; j < R2_RADIX16_WORDS(ZEN_N4); j += step_words) {
+            for (j = i; j < R2_RADIX16_WORDS(DAWNP_N4); j += step_words) {
                 acc ^= in[j];
             }
             out[i] = acc & R2_RADIX16_LANE_MASK;
@@ -134,7 +134,7 @@ static void r2_radix16_fold_n4_fixed(uint32_t out[R2_RADIX16_WORDS(ZEN_N4)],
     r2_radix16_zero_tail_n4(out, out_words);
 }
 
-static void r2_radix16_div_xn_plus1_n4_fixed(uint32_t a[R2_RADIX16_WORDS(ZEN_N4)],
+static void r2_radix16_div_xn_plus1_n4_fixed(uint32_t a[R2_RADIX16_WORDS(DAWNP_N4)],
                                               unsigned int step)
 {
     unsigned int i;
@@ -142,7 +142,7 @@ static void r2_radix16_div_xn_plus1_n4_fixed(uint32_t a[R2_RADIX16_WORDS(ZEN_N4)
     if ((step & 7u) == 0u) {
         unsigned int step_words = step >> 3;
 
-        for (i = step_words; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+        for (i = step_words; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
             a[i] ^= a[i - step_words];
             a[i] &= R2_RADIX16_LANE_MASK;
         }
@@ -150,7 +150,7 @@ static void r2_radix16_div_xn_plus1_n4_fixed(uint32_t a[R2_RADIX16_WORDS(ZEN_N4)
         uint32_t prev = 0;
         unsigned int shift = 4u * step;
 
-        for (i = 0; i < R2_RADIX16_WORDS(ZEN_N4); i++) {
+        for (i = 0; i < R2_RADIX16_WORDS(DAWNP_N4); i++) {
             uint32_t word = (a[i] & R2_RADIX16_LANE_MASK)
                           ^ (prev >> (32u - shift));
             unsigned int distance;
@@ -194,9 +194,9 @@ static void r2_radix16_xor_shifted_fixed(uint32_t *dst,
 void FastInversion(uint32_t *f_inv, const uint32_t *f_rad)
 {
     unsigned int l, n;
-    uint32_t k[R2_RADIX16_WORDS(ZEN_N4)];
-    uint32_t b[R2_RADIX16_WORDS(ZEN_N4)];
-    uint32_t tmp[R2_RADIX16_WORDS(ZEN_N4)];
+    uint32_t k[R2_RADIX16_WORDS(DAWNP_N4)];
+    uint32_t b[R2_RADIX16_WORDS(DAWNP_N4)];
+    uint32_t tmp[R2_RADIX16_WORDS(DAWNP_N4)];
     uint32_t b0;
 
     r2_radix16_prefix_xor_n4_fixed(k, f_rad);
@@ -205,11 +205,11 @@ void FastInversion(uint32_t *f_inv, const uint32_t *f_rad)
     r2_radix16_xor_mask_n4_fixed(k, f_rad, b0);
     r2_radix16_prefix_xor_n4_fixed(k, k);
 
-    memset(f_inv, 0, R2_RADIX16_WORDS(ZEN_N4) * sizeof(uint32_t));
+    memset(f_inv, 0, R2_RADIX16_WORDS(DAWNP_N4) * sizeof(uint32_t));
     f_inv[0] = (b0 ^ 1u) | (b0 << 4);
 
     n = 1;
-    for(l = 1; l < ZEN_N4_LOG2; l++)
+    for(l = 1; l < DAWNP_N4_LOG2; l++)
     {
         unsigned int words;
 
@@ -220,8 +220,8 @@ void FastInversion(uint32_t *f_inv, const uint32_t *f_rad)
         r2_radix16_mul(b, f_inv, tmp, n);
         r2_radix16_zero_tail_n4(b, words);
 
-        r2_radix16_mul(tmp, b, f_rad, ZEN_N4);
-        for (words = 0; words < R2_RADIX16_WORDS(ZEN_N4); words++) {
+        r2_radix16_mul(tmp, b, f_rad, DAWNP_N4);
+        for (words = 0; words < R2_RADIX16_WORDS(DAWNP_N4); words++) {
             k[words] ^= tmp[words] & R2_RADIX16_LANE_MASK;
         }
 
@@ -234,25 +234,25 @@ void FastInversion(uint32_t *f_inv, const uint32_t *f_rad)
 
 void poly_generate_g(int16_t *a, const uint8_t *seed, uint8_t nonce)
 {
-    uint8_t buf[ZEN_N_LEN_BYTES*4];
+    uint8_t buf[DAWNP_N_LEN_BYTES*4];
 
-    zen_pseudoXOF(ZEN_N*4, seed, SEED_LEN_BYTES*8, buf, nonce);
+    dawnp_pseudoXOF(DAWNP_N*4, seed, SEED_LEN_BYTES*8, buf, nonce);
     tenary3_16(a, buf);
 }
 
 void poly_generate_f(int16_t *a, const uint8_t *seed, uint8_t nonce)
 {
-    uint8_t buf[ZEN_N_LEN_BYTES*3];
+    uint8_t buf[DAWNP_N_LEN_BYTES*3];
 
-    zen_pseudoXOF(ZEN_N*3, seed, SEED_LEN_BYTES*8, buf, nonce);
+    dawnp_pseudoXOF(DAWNP_N*3, seed, SEED_LEN_BYTES*8, buf, nonce);
     tenary1_8(a, buf);
 }
 
 void poly_generate_se(int16_t *a, const uint8_t *seed, uint8_t nonce)
 {
-    uint8_t buf[ZEN_N_LEN_BYTES*2];
+    uint8_t buf[DAWNP_N_LEN_BYTES*2];
 
-    zen_pseudoXOF(ZEN_N*2, seed, SEED_LEN_BYTES*8, buf, nonce);
+    dawnp_pseudoXOF(DAWNP_N*2, seed, SEED_LEN_BYTES*8, buf, nonce);
     cbd1(a, buf);
 }
 
@@ -303,7 +303,7 @@ void poly_secretkey_pack(uint8_t *ss, const int16_t *a)
 {
     unsigned int i, j, k;
 
-    for(i = 0; i < ZEN_N; i += 32)
+    for(i = 0; i < DAWNP_N; i += 32)
     {
         const int16_t *src = a + i;
         uint8_t *dst = ss + (i / 32) * 40;
@@ -329,7 +329,7 @@ void poly_secretkey_unpack(int16_t *a, const uint8_t *ss)
 {
     unsigned int i, j, k;
 
-    for(i = 0; i < ZEN_N; i += 32)
+    for(i = 0; i < DAWNP_N; i += 32)
     {
         int16_t *dst = a + i;
         const uint8_t *src = ss + (i / 32) * 40;
@@ -363,7 +363,7 @@ void poly_publickey_pack(uint8_t *pa, const int16_t *a)
     uint64_t res[154] = {0};
 
     idx = 0;
-    for(i = 0; i < ZEN_N - 4; i += 5)
+    for(i = 0; i < DAWNP_N - 4; i += 5)
     {
         tmp[idx] =
               (uint64_t)(uint16_t)a[i]
@@ -375,10 +375,10 @@ void poly_publickey_pack(uint8_t *pa, const int16_t *a)
     }
 
     tmp[204] =
-          (uint64_t)(uint16_t)a[ZEN_N - 4]
-        + (uint64_t)(uint16_t)a[ZEN_N - 3] * pack_table[1]
-        + (uint64_t)(uint16_t)a[ZEN_N - 2] * pack_table[2]
-        + (uint64_t)(uint16_t)a[ZEN_N - 1] * pack_table[3];
+          (uint64_t)(uint16_t)a[DAWNP_N - 4]
+        + (uint64_t)(uint16_t)a[DAWNP_N - 3] * pack_table[1]
+        + (uint64_t)(uint16_t)a[DAWNP_N - 2] * pack_table[2]
+        + (uint64_t)(uint16_t)a[DAWNP_N - 1] * pack_table[3];
 
     idx = 0;
     for(i = 0; i < 204; i += 4)
@@ -395,7 +395,7 @@ void poly_publickey_pack(uint8_t *pa, const int16_t *a)
 
     res[idx++] = tmp[204];
 
-    memcpy(pa, (const uint8_t *)res, ZEN_INDCPA_PUBLICKEY_LEN_BYTES);
+    memcpy(pa, (const uint8_t *)res, DAWNP_INDCPA_PUBLICKEY_LEN_BYTES);
 }
 
 static inline uint32_t div769_u26(uint32_t x, uint32_t *r)
@@ -428,7 +428,7 @@ void poly_publickey_unpack(int16_t *a, const uint8_t *pa)
     const uint64_t MASK48    = 0x0000FFFFFFFFFFFFULL;
     const uint64_t MASK39    = 0x0000007FFFFFFFFFULL;
 
-    memcpy((uint8_t *)res, pa, ZEN_INDCPA_PUBLICKEY_LEN_BYTES);
+    memcpy((uint8_t *)res, pa, DAWNP_INDCPA_PUBLICKEY_LEN_BYTES);
 
     idx = 153;
 
@@ -449,11 +449,11 @@ void poly_publickey_unpack(int16_t *a, const uint8_t *pa)
 
     for(i = 0; i < 4; i++)
     {
-        a[ZEN_N - 4 + i] = divmod769_u48(&tmp[204]);
+        a[DAWNP_N - 4 + i] = divmod769_u48(&tmp[204]);
     }
 
     idx = 0;
-    for(i = 0; i < ZEN_N - 4; i += 5)
+    for(i = 0; i < DAWNP_N - 4; i += 5)
     {
         int j;
 
@@ -470,7 +470,7 @@ void poly_ciphertext_pack(uint8_t *pa, const int16_t *a)
 {
     unsigned int i;
 
-    for(i = 0; i < ZEN_N; i++)
+    for(i = 0; i < DAWNP_N; i++)
     {
         pa[i] = (uint8_t)(a[i] & 0xFF);
     }
@@ -480,7 +480,7 @@ void poly_ciphertext_unpack(int16_t *a, const uint8_t *pa)
 {
     unsigned int i;
 
-    for(i = 0; i < ZEN_N; i++)
+    for(i = 0; i < DAWNP_N; i++)
     {
         a[i] = (int16_t)pa[i];
     }

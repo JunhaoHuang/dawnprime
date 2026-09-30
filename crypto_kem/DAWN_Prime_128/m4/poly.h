@@ -21,14 +21,14 @@ extern "C"
     int check_poly_inv_Z2(int16_t *a);
 
     /// @brief Assembly fused fold/check: emit radix16 x^(N/4)+1 fold and return Z2 non-invertibility
-    /// @param[out] r_rad Base address of output radix16 word array of length R2_RADIX16_WORDS(ZEN_N4)
-    /// @param[in] a Base address of input polynomial coefficient array of length ZEN_N
+    /// @param[out] r_rad Base address of output radix16 word array of length R2_RADIX16_WORDS(DAWNP_N4)
+    /// @param[in] a Base address of input polynomial coefficient array of length DAWNP_N
     /// @return 1 if the folded polynomial is not invertible in Z2, otherwise 0
     int poly_xor4_radix16(uint32_t *r_rad, const int16_t *a);
 
     /// @brief Compute the inverse of a binary polynomial already packed in radix16 R2 representation
-    /// @param[out] f_inv Base address of output radix16 word array of length R2_RADIX16_WORDS(ZEN_N4)
-    /// @param[in] f_rad Base address of input radix16 word array of length R2_RADIX16_WORDS(ZEN_N4)
+    /// @param[out] f_inv Base address of output radix16 word array of length R2_RADIX16_WORDS(DAWNP_N4)
+    /// @param[in] f_rad Base address of input radix16 word array of length R2_RADIX16_WORDS(DAWNP_N4)
     /// @return None
     void FastInversion(uint32_t *f_inv, const uint32_t *f_rad);
 
@@ -92,24 +92,24 @@ extern "C"
     void poly_publickey_unpack(int16_t *a, const uint8_t *pa);
 
     /// @brief Pack a polynomial with coefficients uniformly distributed over Z256 into a byte array
-    /// @param[out] pa Base address of output packed byte array of length ZEN_INDCPA_CIPHERTEXT_LEN_BYTES
-    /// @param[in] a Base address of input polynomial coefficient array of length ZEN_N
+    /// @param[out] pa Base address of output packed byte array of length DAWNP_INDCPA_CIPHERTEXT_LEN_BYTES
+    /// @param[in] a Base address of input polynomial coefficient array of length DAWNP_N
     /// @return None
     void poly_ciphertext_pack(uint8_t *pa, const int16_t *a);
 
     /// @brief Unpack a byte array into a polynomial with coefficients in Z256; inverse of poly_ciphertext_pack
-    /// @param[out] a Base address of output polynomial coefficient array of length ZEN_N
-    /// @param[in] pa Base address of input packed byte array of length ZEN_INDCPA_CIPHERTEXT_LEN_BYTES
+    /// @param[out] a Base address of output polynomial coefficient array of length DAWNP_N
+    /// @param[in] pa Base address of input packed byte array of length DAWNP_INDCPA_CIPHERTEXT_LEN_BYTES
     /// @return None
     void poly_ciphertext_unpack(int16_t *a, const uint8_t *pa);
 
     /// @brief Compress polynomial coefficients from Z769 to 8-bit values
-    /// @param[in,out] a Base address of input polynomial coefficient array of length ZEN_N; each coefficient is replaced by its compressed 8-bit representation
+    /// @param[in,out] a Base address of input polynomial coefficient array of length DAWNP_N; each coefficient is replaced by its compressed 8-bit representation
     /// @return None
     void poly_compress(int16_t *a);
 
     /// @brief Decompress 8-bit polynomial coefficients to approximate values in Z769
-    /// @param[in,out] a Base address of input polynomial coefficient array of length ZEN_N; each compressed 8-bit coefficient is replaced by its decompressed value in Z769
+    /// @param[in,out] a Base address of input polynomial coefficient array of length DAWNP_N; each compressed 8-bit coefficient is replaced by its decompressed value in Z769
     /// @return None
     void poly_decompress(int16_t *a);
 

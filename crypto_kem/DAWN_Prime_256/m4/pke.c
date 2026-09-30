@@ -13,10 +13,10 @@
 void pke_keygen_derand(unsigned char *pk, unsigned char *sk, const unsigned char *seed)
 {
     uint8_t nonce;
-    int16_t f[ZEN_N], g[ZEN_N];
-    int16_t t0[ZEN_N], t1[ZEN_N];
-    uint32_t t0_rad[R2_RADIX16_WORDS(ZEN_N4)];
-    uint32_t f2_rad[R2_RADIX16_WORDS(ZEN_N4)];
+    int16_t f[DAWNP_N], g[DAWNP_N];
+    int16_t t0[DAWNP_N], t1[DAWNP_N];
+    uint32_t t0_rad[R2_RADIX16_WORDS(DAWNP_N4)];
+    uint32_t f2_rad[R2_RADIX16_WORDS(DAWNP_N4)];
 
     nonce = 0;
     //generate f
@@ -59,7 +59,7 @@ void pke_keygen_derand(unsigned char *pk, unsigned char *sk, const unsigned char
     poly_basemul_ntt_mq(t0, g, t1);
     poly_publickey_pack(pk, t0);
     poly_secretkey_pack(sk, f);
-    r2_radix16_tobytes(sk+ZEN_F_NTT_PACK, f2_rad, ZEN_N4);
+    r2_radix16_tobytes(sk+DAWNP_F_NTT_PACK, f2_rad, DAWNP_N4);
 
 }
 
@@ -74,8 +74,8 @@ void pke_keygen(unsigned char *pk, unsigned char *sk)
 void pke_enc(unsigned char *pk, unsigned char *m, unsigned char *seed, unsigned char *ct)
 {
     uint8_t nonce;
-    int16_t h[ZEN_N], s[ZEN_N], e[ZEN_N];
-    int16_t t0[ZEN_N], t1[ZEN_N];
+    int16_t h[DAWNP_N], s[DAWNP_N], e[DAWNP_N];
+    int16_t t0[DAWNP_N], t1[DAWNP_N];
 
     poly_publickey_unpack(h, pk);
 
@@ -92,7 +92,7 @@ void pke_enc(unsigned char *pk, unsigned char *m, unsigned char *seed, unsigned 
 
     poly_add(t1, t1, t0);
     poly_add(t1, t1, e);
-    mq_poly_reduce_mq(t1, ZEN_N);
+    mq_poly_reduce_mq(t1, DAWNP_N);
 
     poly_compress(t1);
     poly_ciphertext_pack(ct, t1);
@@ -104,14 +104,14 @@ void pke_dec(unsigned char *sk, unsigned char *ct, unsigned char *m)
     unsigned int i, mask1;
     uint16_t delta, even_wins;
     int16_t c0, c1, c2, c3;
-    int16_t f[ZEN_N];
-    int16_t t0[ZEN_N], t1[ZEN_N];
-    uint32_t f2_rad[R2_RADIX16_WORDS(ZEN_N4)];
-    uint32_t t1_rad[R2_RADIX16_WORDS(ZEN_N2)];
-    uint32_t mp0_rad[R2_RADIX16_WORDS(ZEN_N2)], mp1_rad[R2_RADIX16_WORDS(ZEN_N2)];
+    int16_t f[DAWNP_N];
+    int16_t t0[DAWNP_N], t1[DAWNP_N];
+    uint32_t f2_rad[R2_RADIX16_WORDS(DAWNP_N4)];
+    uint32_t t1_rad[R2_RADIX16_WORDS(DAWNP_N2)];
+    uint32_t mp0_rad[R2_RADIX16_WORDS(DAWNP_N2)], mp1_rad[R2_RADIX16_WORDS(DAWNP_N2)];
 
     poly_secretkey_unpack(f, sk);
-    r2_radix16_frombytes(f2_rad, sk + ZEN_F_NTT_PACK, ZEN_N4);
+    r2_radix16_frombytes(f2_rad, sk + DAWNP_F_NTT_PACK, DAWNP_N4);
     poly_ciphertext_unpack(t0, ct);
     poly_decompress(t0);
 
@@ -128,22 +128,22 @@ void pke_dec(unsigned char *sk, unsigned char *ct, unsigned char *m)
 
     // SimpleDecoding: build S=\delta*x^{j*\times n/4}, then materialize S*f_inv in R_{2L,2}.
     memset(t1_rad, 0, sizeof(t1_rad));
-    for (i = 0; i < ZEN_N4; i++)
+    for (i = 0; i < DAWNP_N4; i++)
     {
         c0 = t0[i];
-        c1 = t0[i + ZEN_N4];
-        c2 = t0[i + 2 * ZEN_N4];
-        c3 = t0[i + 3 * ZEN_N4];
+        c1 = t0[i + DAWNP_N4];
+        c2 = t0[i + 2 * DAWNP_N4];
+        c3 = t0[i + 3 * DAWNP_N4];
         delta = (uint16_t)((c0 & 1) ^ (c1 & 1) ^ (c2 & 1) ^ (c3 & 1));
 
         mask1 = (c0 >= 0);
-        c0 = ((ZEN_Q2 - c0) & (-mask1)) | ((ZEN_Q2 + c0) & (~(-mask1)));
+        c0 = ((DAWNP_Q2 - c0) & (-mask1)) | ((DAWNP_Q2 + c0) & (~(-mask1)));
         mask1 = (c1 >= 0);
-        c1 = ((ZEN_Q2 - c1) & (-mask1)) | ((ZEN_Q2 + c1) & (~(-mask1)));
+        c1 = ((DAWNP_Q2 - c1) & (-mask1)) | ((DAWNP_Q2 + c1) & (~(-mask1)));
         mask1 = (c2 >= 0);
-        c2 = ((ZEN_Q2 - c2) & (-mask1)) | ((ZEN_Q2 + c2) & (~(-mask1)));
+        c2 = ((DAWNP_Q2 - c2) & (-mask1)) | ((DAWNP_Q2 + c2) & (~(-mask1)));
         mask1 = (c3 >= 0);
-        c3 = ((ZEN_Q2 - c3) & (-mask1)) | ((ZEN_Q2 + c3) & (~(-mask1)));
+        c3 = ((DAWNP_Q2 - c3) & (-mask1)) | ((DAWNP_Q2 + c3) & (~(-mask1)));
 
         mask1 = (c0 <= c2);
         c0 = (c0 & (-mask1)) | (c2 & (~(-mask1)));
@@ -154,16 +154,16 @@ void pke_dec(unsigned char *sk, unsigned char *ct, unsigned char *m)
         t1_rad[0] ^= (uint32_t)(delta ^ 1u);
         t1_rad[i >> 3] ^= (uint32_t)(delta & even_wins)
                             << (4u * (i & 7u));
-        t1_rad[(i + ZEN_N4) >> 3] ^=
+        t1_rad[(i + DAWNP_N4) >> 3] ^=
             (uint32_t)(delta & (even_wins ^ 1u))
-            << (4u * ((i + ZEN_N4) & 7u));
+            << (4u * ((i + DAWNP_N4) & 7u));
     }
 
     r2_radix16_mul_512x256(mp1_rad, t1_rad, f2_rad);
 
-    for (i = 0; i < R2_RADIX16_WORDS(ZEN_N4); i++)
+    for (i = 0; i < R2_RADIX16_WORDS(DAWNP_N4); i++)
     {
         mp1_rad[i] = mp0_rad[i] ^ mp1_rad[i];
     }
-    r2_radix16_tobytes(m, mp1_rad, ZEN_N4);
+    r2_radix16_tobytes(m, mp1_rad, DAWNP_N4);
 }

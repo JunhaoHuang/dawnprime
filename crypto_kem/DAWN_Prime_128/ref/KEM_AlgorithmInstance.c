@@ -2,7 +2,7 @@
 Copyright (c) 2026 Yu Zhang.
 Organization: State Key Laboratory of Cyberspace Security Defense,Institute of Information Engineering, CAS
               School of Cyber Security, University of Chinese Academy of Sciences  
-File Description: Declares the ZEN key-encapsulation mechanism layer for the optimized ZEN-128 instance.
+File Description: Declares the DAWNP key-encapsulation mechanism layer for the optimized DAWNP-128 instance.
 */
 
 #include "KEM_AlgorithmInstance.h"
@@ -18,22 +18,22 @@ File Description: Declares the ZEN key-encapsulation mechanism layer for the opt
 
 unsigned long long kem_get_pk_len_bytes()
 {
-	return ZEN_PUBLICKEY_LEN_BYTES;
+	return DAWNP_PUBLICKEY_LEN_BYTES;
 }
 
 unsigned long long kem_get_sk_len_bytes()
 {
-	return ZEN_SECREKEY_LEN_BYTES;
+	return DAWNP_SECREKEY_LEN_BYTES;
 }
 
 unsigned long long kem_get_ss_len_bytes()
 {
-	return ZEN_SHAREDKEY_LEN_BYTES;
+	return DAWNP_SHAREDKEY_LEN_BYTES;
 }
 
 unsigned long long kem_get_ct_len_bytes()
 {
-	return ZEN_CIPHERTEXT_LEN_BYTES;
+	return DAWNP_CIPHERTEXT_LEN_BYTES;
 }
 
 int kem_keygen_derand(
@@ -51,12 +51,12 @@ int kem_keygen_derand(
     *sk_len_bytes = kem_get_sk_len_bytes();
 
 	pke_keygen_derand(pk, sk, seed);
-	for(i = 0; i < ZEN_INDCPA_PUBLICKEY_LEN_BYTES; i++)
+	for(i = 0; i < DAWNP_INDCPA_PUBLICKEY_LEN_BYTES; i++)
 	{
-		sk[i+ZEN_INDCPA_SECREKEY_LEN_BYTES] = pk[i];
+		sk[i+DAWNP_INDCPA_SECREKEY_LEN_BYTES] = pk[i];
 	}
-	sha3_256(sk+ZEN_INDCPA_SECREKEY_LEN_BYTES+ZEN_INDCPA_PUBLICKEY_LEN_BYTES, pk, ZEN_INDCPA_PUBLICKEY_LEN_BYTES);
-	randombytes(sk+ZEN_INDCPA_SECREKEY_LEN_BYTES+ZEN_INDCPA_PUBLICKEY_LEN_BYTES+ZEN_SYM_LEN_BYTES, ZEN_SHAREDKEY_LEN_BYTES);
+	sha3_256(sk+DAWNP_INDCPA_SECREKEY_LEN_BYTES+DAWNP_INDCPA_PUBLICKEY_LEN_BYTES, pk, DAWNP_INDCPA_PUBLICKEY_LEN_BYTES);
+	randombytes(sk+DAWNP_INDCPA_SECREKEY_LEN_BYTES+DAWNP_INDCPA_PUBLICKEY_LEN_BYTES+DAWNP_SYM_LEN_BYTES, DAWNP_SHAREDKEY_LEN_BYTES);
 	
 	return 0;
 }
@@ -74,12 +74,12 @@ int kem_keygen(
     *sk_len_bytes = kem_get_sk_len_bytes();
 
 	pke_keygen(pk, sk);
-	for(i = 0; i < ZEN_INDCPA_PUBLICKEY_LEN_BYTES; i++)
+	for(i = 0; i < DAWNP_INDCPA_PUBLICKEY_LEN_BYTES; i++)
 	{
-		sk[i+ZEN_INDCPA_SECREKEY_LEN_BYTES] = pk[i];
+		sk[i+DAWNP_INDCPA_SECREKEY_LEN_BYTES] = pk[i];
 	}
-	sha3_256(sk+ZEN_INDCPA_SECREKEY_LEN_BYTES+ZEN_INDCPA_PUBLICKEY_LEN_BYTES, pk, ZEN_INDCPA_PUBLICKEY_LEN_BYTES);
-	randombytes(sk+ZEN_INDCPA_SECREKEY_LEN_BYTES+ZEN_INDCPA_PUBLICKEY_LEN_BYTES+ZEN_SYM_LEN_BYTES, ZEN_SHAREDKEY_LEN_BYTES);
+	sha3_256(sk+DAWNP_INDCPA_SECREKEY_LEN_BYTES+DAWNP_INDCPA_PUBLICKEY_LEN_BYTES, pk, DAWNP_INDCPA_PUBLICKEY_LEN_BYTES);
+	randombytes(sk+DAWNP_INDCPA_SECREKEY_LEN_BYTES+DAWNP_INDCPA_PUBLICKEY_LEN_BYTES+DAWNP_SYM_LEN_BYTES, DAWNP_SHAREDKEY_LEN_BYTES);
 	
 	return 0;
 }
@@ -89,8 +89,8 @@ int kem_enc(
 	unsigned char *ss, unsigned long long *ss_len_bytes,
 	unsigned char *ct, unsigned long long *ct_len_bytes)
 {
-	uint8_t buf[ZEN_INDCPA_MSG_LEN_BYTES+2*ZEN_SYM_LEN_BYTES];
-	uint8_t kr[2*ZEN_SYM_LEN_BYTES+SEED_LEN_BYTES];
+	uint8_t buf[DAWNP_INDCPA_MSG_LEN_BYTES+2*DAWNP_SYM_LEN_BYTES];
+	uint8_t kr[2*DAWNP_SYM_LEN_BYTES+SEED_LEN_BYTES];
 
 	if (pk == NULL || ss == NULL || ss_len_bytes == NULL || ct == NULL || ct_len_bytes == NULL) {
         return -1;
@@ -102,11 +102,11 @@ int kem_enc(
     *ss_len_bytes = kem_get_ss_len_bytes();
     *ct_len_bytes = kem_get_ct_len_bytes();
 
-	randombytes(buf, ZEN_INDCPA_MSG_LEN_BYTES);
-	sha3_256(buf+ZEN_INDCPA_MSG_LEN_BYTES, pk, ZEN_INDCPA_PUBLICKEY_LEN_BYTES);
-	shake256(kr, 2*ZEN_SYM_LEN_BYTES+SEED_LEN_BYTES, buf, ZEN_INDCPA_MSG_LEN_BYTES+ZEN_SYM_LEN_BYTES);
-	pke_enc(pk, buf, kr+ZEN_SYM_LEN_BYTES, ct);
-	memcpy(ss, kr, ZEN_SHAREDKEY_LEN_BYTES);
+	randombytes(buf, DAWNP_INDCPA_MSG_LEN_BYTES);
+	sha3_256(buf+DAWNP_INDCPA_MSG_LEN_BYTES, pk, DAWNP_INDCPA_PUBLICKEY_LEN_BYTES);
+	shake256(kr, 2*DAWNP_SYM_LEN_BYTES+SEED_LEN_BYTES, buf, DAWNP_INDCPA_MSG_LEN_BYTES+DAWNP_SYM_LEN_BYTES);
+	pke_enc(pk, buf, kr+DAWNP_SYM_LEN_BYTES, ct);
+	memcpy(ss, kr, DAWNP_SHAREDKEY_LEN_BYTES);
 
 	return 0;
 }
@@ -117,12 +117,12 @@ int kem_dec(
 	unsigned char *ss, unsigned long long *ss_len_bytes)
 {
 	unsigned int i, mask;
-	uint8_t buf[ZEN_INDCPA_MSG_LEN_BYTES+ZEN_SYM_LEN_BYTES];
-	uint8_t kr[2*ZEN_SYM_LEN_BYTES+SEED_LEN_BYTES];
-	uint8_t zc[ZEN_SHAREDKEY_LEN_BYTES+ZEN_CIPHERTEXT_LEN_BYTES];
-	uint8_t ctp[ZEN_CIPHERTEXT_LEN_BYTES];
-	uint8_t ssp[2*ZEN_SHAREDKEY_LEN_BYTES];
-	uint8_t *pk = sk+ZEN_INDCPA_SECREKEY_LEN_BYTES;
+	uint8_t buf[DAWNP_INDCPA_MSG_LEN_BYTES+DAWNP_SYM_LEN_BYTES];
+	uint8_t kr[2*DAWNP_SYM_LEN_BYTES+SEED_LEN_BYTES];
+	uint8_t zc[DAWNP_SHAREDKEY_LEN_BYTES+DAWNP_CIPHERTEXT_LEN_BYTES];
+	uint8_t ctp[DAWNP_CIPHERTEXT_LEN_BYTES];
+	uint8_t ssp[2*DAWNP_SHAREDKEY_LEN_BYTES];
+	uint8_t *pk = sk+DAWNP_INDCPA_SECREKEY_LEN_BYTES;
 
 	if (sk == NULL || ct == NULL || ss == NULL || ss_len_bytes == NULL) {
         return -2;
@@ -133,24 +133,24 @@ int kem_dec(
 	*ss_len_bytes = kem_get_ss_len_bytes();
 
 	pke_dec(sk, ct, buf);
-	memcpy(buf+ZEN_INDCPA_MSG_LEN_BYTES, sk+ZEN_INDCPA_SECREKEY_LEN_BYTES+ZEN_INDCPA_PUBLICKEY_LEN_BYTES, ZEN_SYM_LEN_BYTES);
-	shake256(kr, 2*ZEN_SYM_LEN_BYTES+SEED_LEN_BYTES, buf, ZEN_INDCPA_MSG_LEN_BYTES+ZEN_SYM_LEN_BYTES);
+	memcpy(buf+DAWNP_INDCPA_MSG_LEN_BYTES, sk+DAWNP_INDCPA_SECREKEY_LEN_BYTES+DAWNP_INDCPA_PUBLICKEY_LEN_BYTES, DAWNP_SYM_LEN_BYTES);
+	shake256(kr, 2*DAWNP_SYM_LEN_BYTES+SEED_LEN_BYTES, buf, DAWNP_INDCPA_MSG_LEN_BYTES+DAWNP_SYM_LEN_BYTES);
 
-	memcpy(zc, sk+ZEN_INDCPA_SECREKEY_LEN_BYTES+ZEN_INDCPA_PUBLICKEY_LEN_BYTES+ZEN_SYM_LEN_BYTES, ZEN_SHAREDKEY_LEN_BYTES);
-	memcpy(zc+ZEN_SHAREDKEY_LEN_BYTES, ct, ZEN_CIPHERTEXT_LEN_BYTES);
+	memcpy(zc, sk+DAWNP_INDCPA_SECREKEY_LEN_BYTES+DAWNP_INDCPA_PUBLICKEY_LEN_BYTES+DAWNP_SYM_LEN_BYTES, DAWNP_SHAREDKEY_LEN_BYTES);
+	memcpy(zc+DAWNP_SHAREDKEY_LEN_BYTES, ct, DAWNP_CIPHERTEXT_LEN_BYTES);
 
-	sha3_256(ssp, zc, ZEN_SHAREDKEY_LEN_BYTES+ZEN_CIPHERTEXT_LEN_BYTES);
+	sha3_256(ssp, zc, DAWNP_SHAREDKEY_LEN_BYTES+DAWNP_CIPHERTEXT_LEN_BYTES);
 
-	pke_enc(pk, buf, kr+ZEN_SYM_LEN_BYTES, ctp);	
+	pke_enc(pk, buf, kr+DAWNP_SYM_LEN_BYTES, ctp);	
 
 	mask = 0;
-	for(i = 0; i < ZEN_CIPHERTEXT_LEN_BYTES; i++)
+	for(i = 0; i < DAWNP_CIPHERTEXT_LEN_BYTES; i++)
 	{
 		mask |= (ct[i] ^ ctp[i]);
 	}
 	mask = ((mask | (0u - mask)) >> 31);
 
-	for(i = 0; i < ZEN_SHAREDKEY_LEN_BYTES; i++)
+	for(i = 0; i < DAWNP_SHAREDKEY_LEN_BYTES; i++)
 	{
 		ss[i] = (ssp[i] & (-mask)) | (kr[i] & (~(-mask)));
 	}
