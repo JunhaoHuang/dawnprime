@@ -384,10 +384,10 @@ def table_value(measurement: AggregatedMeasurement | None) -> str:
 
 
 def kilocycle_value(measurement: AggregatedMeasurement | None) -> str:
-    """Render whole kilo-cycles, truncating cycles below the next thousand."""
+    """Render the mean divided by 1000 as whole kilo-cycles (rounded half-up), suffixed with k."""
     if measurement is None:
         return "--"
-    return f"{measurement.rounded_mean // 1000}k"
+    return f"{(measurement.rounded_mean + 500) // 1000:,}k"
 
 
 def scheme_display_name(scheme: str) -> str:
