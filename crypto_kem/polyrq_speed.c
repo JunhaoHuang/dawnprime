@@ -24,7 +24,7 @@ int main(void) {
     hal_send_str("==========================");
 
 
-    for (i = 0; i < NGCC_ITERATIONS; i++) {
+    for (i = 0; i < ITERATIONS; i++) {
         t0= hal_get_time();
         poly_generate_f(a, speed_seed, nonce++);
         t1 = hal_get_time();

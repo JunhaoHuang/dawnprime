@@ -49,7 +49,7 @@ int main(void) {
         fail_and_halt("alloc_failed");
     }
 
-    for (i = 0; i < NGCC_ITERATIONS; i++) {
+    for (i = 0; i < ITERATIONS; i++) {
         t0 = hal_get_time();
         if (kem_keygen(pk, &ignored_len, sk, &ignored_len) != 0) {
             fail_and_halt("kem_keygen_failed");

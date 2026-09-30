@@ -228,7 +228,7 @@ int main(void)
     r2_radix16_pack(rad_b, b, ZEN_N2);
 #endif
 
-    for (iteration = 0; iteration < NGCC_ITERATIONS; iteration++) {
+    for (iteration = 0; iteration < ITERATIONS; iteration++) {
 #if ZENSPEED_HAVE_RADIX16
         BENCHMARK_CALL("r2_radix16_mul 2 cycles:",
                        r2_radix16_mul_2_asm(rad_res, rad_a_2, rad_b_2),

@@ -56,7 +56,7 @@ int main(void) {
     hal_send_str("==========================");
 
 
-    for (i = 0; i < NGCC_ITERATIONS; i++) {
+    for (i = 0; i < ITERATIONS; i++) {
         if (test_roundtrip() != 0) {
             hal_send_str("ERROR KEYS");
             return -1;

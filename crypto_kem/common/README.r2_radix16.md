@@ -29,7 +29,7 @@ recombinations use two-word `LDRD`/`STRD` batches.
 
 ## Reproduction
 
-From the ngccm4 repository root:
+From the repository root:
 
 ```sh
 python3 crypto_kem/common/gen_r2_radix16_mul.py

@@ -356,7 +356,7 @@ def macro_component(value: str) -> str:
 
 
 def macro_name(key: MeasurementKey) -> str:
-    name = "ngcc" + "".join(
+    name = "dawn" + "".join(
         macro_component(component)
         for component in (
             key.scheme,

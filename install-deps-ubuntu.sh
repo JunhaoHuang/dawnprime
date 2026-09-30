@@ -6,7 +6,7 @@ usage() {
 ' "${0##*/}"
 	printf '
 '
-	printf 'Install Ubuntu/Debian host dependencies for building NGCCM4.
+	printf 'Install Ubuntu/Debian host dependencies for building DAWN-Prime.
 '
 	printf '
 '
@@ -62,7 +62,7 @@ sudo apt-get update
 sudo apt-get install -y "${packages[@]}"
 
 printf '
-Installed NGCCM4 host dependencies.
+Installed DAWN-Prime host dependencies.
 '
 printf 'Quick verification:
 '

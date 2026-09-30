@@ -22,7 +22,7 @@ APP ?=
 Q ?=
 OPT ?= speed
 LTO ?= 0
-NGCC_ITERATIONS ?= 100
+ITERATIONS ?= 100
 DKEX_SIG_MLDSA_LEVEL ?= 2
 
 CROSS_PREFIX ?= arm-none-eabi
@@ -34,7 +34,7 @@ OBJCOPY := $(CROSS_PREFIX)-objcopy
 SIZE := $(CROSS_PREFIX)-size
 
 CPPFLAGS += -I$(CURDIR)
-CPPFLAGS += -DNGCC_ITERATIONS=$(NGCC_ITERATIONS)
+CPPFLAGS += -DITERATIONS=$(ITERATIONS)
 CFLAGS += -ffunction-sections -fdata-sections -fomit-frame-pointer -Wpedantic -Wall -Wextra -std=c99 
 LDFLAGS += -Wl,--gc-sections -u,__wrap__sbrk
 

@@ -42,11 +42,11 @@ class BenchmarkToLatexTests(unittest.TestCase):
 
         self.assertEqual(skipped, [])
         self.assertIn(
-            r"\newcommand{\ngccExampleOneTwoEightMFourSpeedKeypairCycles}{2}",
+            r"\newcommand{\dawnExampleOneTwoEightMFourSpeedKeypairCycles}{2}",
             latex,
         )
         self.assertIn(
-            r"\newcommand{\ngccExampleOneTwoEightMFourSpeedEncapsCycles}{11}",
+            r"\newcommand{\dawnExampleOneTwoEightMFourSpeedEncapsCycles}{11}",
             latex,
         )
         self.assertIn("Sources:", latex)
@@ -69,7 +69,7 @@ class BenchmarkToLatexTests(unittest.TestCase):
 
         self.assertEqual(skipped, [])
         self.assertIn(
-            r"\newcommand{\ngccDawnPrimeOneTwoEightMFourPolyrqPolyNttCycles}{9034}",
+            r"\newcommand{\dawnDawnPrimeOneTwoEightMFourPolyrqPolyNttCycles}{9034}",
             latex,
         )
 
@@ -83,7 +83,7 @@ class BenchmarkToLatexTests(unittest.TestCase):
 
         self.assertEqual(skipped, [])
         self.assertIn(
-            r"\newcommand{\ngccDawnPrimeOneTwoEightMFourStackKeypairBytes}{8760}",
+            r"\newcommand{\dawnDawnPrimeOneTwoEightMFourStackKeypairBytes}{8760}",
             latex,
         )
         self.assertNotIn("% Tables: complete schemes", latex)
@@ -159,18 +159,18 @@ class BenchmarkToLatexTests(unittest.TestCase):
         self.assertIn(
             (
                 r"Example\_128 (M4) & "
-                r"\ngccExampleOneTwoEightMFourPolyrqPolyNttCycles & -- & -- & -- & -- & --"
+                r"\dawnExampleOneTwoEightMFourPolyrqPolyNttCycles & -- & -- & -- & -- & --"
             ),
             latex,
         )
         self.assertIn(
             (
                 r"Example\_128 (M4) & "
-                r"\ngccExampleOneTwoEightMFourPolyrTwoRTwoRadixOneSixMulSixFourCycles & "
-                r"\ngccExampleOneTwoEightMFourPolyrTwoRTwoRadixOneSixMulOneTwoEightCycles & "
-                r"\ngccExampleOneTwoEightMFourPolyrTwoRTwoRadixOneSixMulTwoFiveSixCycles & "
-                r"\ngccExampleOneTwoEightMFourPolyrTwoRTwoRadixOneSixMulTwoFiveSixXOneTwoEightCycles & "
-                r"\ngccExampleOneTwoEightMFourPolyrTwoFastInversionCycles"
+                r"\dawnExampleOneTwoEightMFourPolyrTwoRTwoRadixOneSixMulSixFourCycles & "
+                r"\dawnExampleOneTwoEightMFourPolyrTwoRTwoRadixOneSixMulOneTwoEightCycles & "
+                r"\dawnExampleOneTwoEightMFourPolyrTwoRTwoRadixOneSixMulTwoFiveSixCycles & "
+                r"\dawnExampleOneTwoEightMFourPolyrTwoRTwoRadixOneSixMulTwoFiveSixXOneTwoEightCycles & "
+                r"\dawnExampleOneTwoEightMFourPolyrTwoFastInversionCycles"
             ),
             latex,
         )
@@ -209,16 +209,16 @@ class BenchmarkToLatexTests(unittest.TestCase):
 
         self.assertEqual(skipped, [])
         self.assertIn(
-            r"\newcommand{\ngccExampleOneTwoEightMFourHashingKeypairHashCycles}{250}",
+            r"\newcommand{\dawnExampleOneTwoEightMFourHashingKeypairHashCycles}{250}",
             latex,
         )
         self.assertIn("% Tables: Keccak (SHA3-256 / SHAKE256) share", latex)
         self.assertIn(
             (
                 r"Example\_128 (M4) & "
-                r"\ngccExampleOneTwoEightMFourHashingKeypairHashCycles & 25.0\% & "
-                r"\ngccExampleOneTwoEightMFourHashingEncapsHashCycles & 25.0\% & "
-                r"\ngccExampleOneTwoEightMFourHashingDecapsHashCycles & 5.0\%"
+                r"\dawnExampleOneTwoEightMFourHashingKeypairHashCycles & 25.0\% & "
+                r"\dawnExampleOneTwoEightMFourHashingEncapsHashCycles & 25.0\% & "
+                r"\dawnExampleOneTwoEightMFourHashingDecapsHashCycles & 5.0\%"
             ),
             latex,
         )
@@ -236,8 +236,8 @@ class BenchmarkToLatexTests(unittest.TestCase):
         latex, skipped = self.render()
 
         self.assertEqual(skipped, [])
-        self.assertIn(r"\newcommand{\ngccExampleOneTwoEightMFourPolyrqPolyNttCycles}{7}", latex)
-        self.assertIn(r"\newcommand{\ngccExampleOneTwoEightMFourPolyrTwoFastInversionCycles}{12}", latex)
+        self.assertIn(r"\newcommand{\dawnExampleOneTwoEightMFourPolyrqPolyNttCycles}{7}", latex)
+        self.assertIn(r"\newcommand{\dawnExampleOneTwoEightMFourPolyrTwoFastInversionCycles}{12}", latex)
         self.assertIn("% Tables: Rq polynomial operations", latex)
         self.assertIn("% Tables: R2 polynomial operations", latex)
 

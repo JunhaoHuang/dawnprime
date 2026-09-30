@@ -47,7 +47,7 @@ int main(void) {
         return -1;
     }
 
-    for (i = 0; i < NGCC_ITERATIONS; i++) {
+    for (i = 0; i < ITERATIONS; i++) {
         randombytes(seed, SEED_LEN_BYTES);
         printbytes(seed, SEED_LEN_BYTES);
 

@@ -1,15 +1,4 @@
 /*
-The software is provided by the Institute of Commercial Cryptography Standards
-(ICCS), and is used for algorithm submissions in the Next-generation Commercial
-Cryptographic Algorithms Program (NGCC).
-
-ICCS doesn't represent or warrant that the operation of the software will be
-uninterrupted or error-free in all cases. ICCS will take no responsibility for
-the use of the software or the results thereof, if the software is used for any
-other purposes.
-*/
-
-/*
 Copyright (c) 2026 Yu Zhang.
 Organization: State Key Laboratory of Cyberspace Security Defense,Institute of Information Engineering, CAS
               School of Cyber Security, University of Chinese Academy of Sciences  

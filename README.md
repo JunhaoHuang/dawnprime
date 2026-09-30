@@ -56,14 +56,10 @@ If you do not need hardware flashing, `openocd` can be omitted.
 
 
 ## Structure
-- ngccm4:
+- dawnprime:
 	- common: common files for the algorithms
 		- SHA3-256 / SHAKE256 (FIPS 202) for hashing and XOF, `randombytes` for seeds
-	- crypto_kem: Key Encapsulation Mechanism schemes
-		- DKE
-		- ZEN: NTRU-based KEM
-	- crypto_sign: Digital Signature schemes
-	- crypto_kex: Key Exchange schemes
+	- crypto_kem: DAWN$\prime$ Key Encapsulation Mechanism schemes
 	- libopencm3: third-party library for ARM Cortex-M4
 	- mk: Makefiles related for building and compiling
 	- README.md
@@ -102,8 +98,6 @@ make PLATFORM=mps2-an386 crypto_kem_{SCHEME_NAME}_ref_test qemu-run -j1
 
 Notes:
 - The QEMU build and run should be only used for correctness verification, e.g., test, testvectors. 
-- Supported families in the makefile system are `crypto_kem`, `crypto_kex`, and `crypto_sign`.
-- The current repository contains KEM implementations. `crypto_kex` and `crypto_sign` are already wired into the discovery/build system
 - Supported hardware platforms are `nucleo-l4r5zi` (STM32L4R5ZI) and `stm32f4discovery` (STM32F407VG); `mps2-an386` is the QEMU emulation target.
 - `PLATFORM=nucleo-l4r5zi` is the default hardware build target. Pass `PLATFORM=stm32f4discovery` to build for the STM32F4DISCOVERY board.
 - `-j1` means serial build mode. You can increase it, for example `-j4`, once the environment is working.
@@ -229,10 +223,10 @@ python3 build_schemes.py PLATFORM=mps2-an386 {SCHEME_NAME...}
 Useful build options:
 
 ```bash
-python3 build_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME} LTO=1 NGCC_ITERATIONS=100 -j8
+python3 build_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME} LTO=1 ITERATIONS=100 -j8
 ```
 
-The script searches `crypto_kem`, `crypto_kex`, and `crypto_sign`. An implementation is detected when the implementation directory contains the family entry file, for example `KEM_AlgorithmInstance.c` for KEM schemes.
+The script searches `crypto_kem`. An implementation is detected when the implementation directory contains the family entry file, for example `KEM_AlgorithmInstance.c` for KEM schemes.
 
 #### Benchmark Runs
 
@@ -256,7 +250,7 @@ python3 benchmark_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME...} --apps spee
 Forward make variables after `PLATFORM=...` as usual:
 
 ```bash
-python3 benchmark_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME...} LTO=1 NGCC_ITERATIONS=100 -j8
+python3 benchmark_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME...} LTO=1 ITERATIONS=100 -j8
 ```
 
 For `mps2-an386`, the benchmark script runs each target through QEMU:
@@ -324,8 +318,6 @@ common/fips202.c        SHA3-256 (hashing) and SHAKE256 (XOF / seed expansion)
 common/keccakf1600.S    Keccak-f[1600] permutation for ARMv7-M
 common/randombytes.c    Randomness source (hardware RNG on STM32 boards, deterministic fallback on QEMU)
 ```
-
-The SM3-based auxiliary functions and DRNG from the original NGCC template are not part of this repository.
 
 Benchmark apps (`speed`, `stack`, `hashing`, `polyr2_speed`, `polyrq_speed`) can also be run manually, for example:
 

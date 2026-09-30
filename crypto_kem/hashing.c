@@ -45,7 +45,7 @@ int main(void) {
     if (pk == NULL || sk == NULL || ct == NULL || ss_a == NULL || ss_b == NULL) {
         fail_and_halt("alloc_failed");
     }
-    for(int i=0;i<NGCC_ITERATIONS;i++){
+    for(int i=0;i<ITERATIONS;i++){
         hash_cycles = 0;
         func_cycles = 0;
         t0 = hal_get_time();
