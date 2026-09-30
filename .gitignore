@@ -1,0 +1,8 @@
+elf/
+obj/
+bin/
+Out/
+.build-platform
+auto_run.sh
+__pycache__/
+*.pyc
