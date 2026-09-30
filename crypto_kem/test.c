@@ -13,25 +13,7 @@
 #include "ntt.h"
 #endif
 #endif
-#ifdef USE_KECCAK
 #include "randombytes.h"
-#else
-#include "drng.h"
-DRNG_ctx drng_algorithm;
-#endif
-static const unsigned char test_seed[] = {
-    0x6e, 0x67, 0x63, 0x63, 0x6d, 0x34, 0x2d, 0x74,
-    0x65, 0x73, 0x74, 0x2d, 0x73, 0x65, 0x65, 0x64
-};
-
-static void fail_and_halt(const char *reason) {
-    hal_send_str(reason);
-#ifdef MPS2_AN386
-    __builtin_trap();
-#endif
-    while (1) {
-    }
-}
 
 static int test_roundtrip(void) {
     unsigned long long pk_len = kem_get_pk_len_bytes();
@@ -73,11 +55,6 @@ int main(void) {
     hal_setup(CLOCK_FAST);
     hal_send_str("==========================");
 
-#ifndef USE_KECCAK
-    if (init_random_number(&drng_algorithm, test_seed, sizeof(test_seed)) != 0) {
-        fail_and_halt("drng_init_failed");
-    }
-#endif
 
     for (i = 0; i < NGCC_ITERATIONS; i++) {
         if (test_roundtrip() != 0) {

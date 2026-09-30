@@ -2,14 +2,6 @@
 
 The following files SHALL NOT be modified:
 
-drng.c                      Source file of Deterministic Random Number Generator
-
-drng.h                      Header file of Deterministic Random Number Generator
-
-auxfunc.c                   Source file of auxiliary functions
-
-auxfunc.h                   Header file of auxiliary functions
-
 KAT_SIG.c                   Source file for generating test vector files of 
                             digital signature (SIG) scheme
 
@@ -53,7 +45,7 @@ KEX_AlgorithmInstance.h     Header file of KEX protocol (programming interface)
     Behavior is undefined on systems with a different byte order.
 3.  This program requires compilation with compilers supporting the 
     ISO/IEC 9899:1999 (C99) standard or later.
-4.  For non-byte-aligned data operations (e.g., DRNG outputs), the most
+4.  For non-byte-aligned data operations, the most
 	significant bit (MSB) first convention applies to partial-byte read/write
     operations.
     Example: the 11-bit non-byte-aligned output "10101100001"(bin) is stored 
@@ -62,11 +54,8 @@ KEX_AlgorithmInstance.h     Header file of KEX protocol (programming interface)
         Address+0  :  1  0  1  0  1  1  0  0  (0xAC)
         Address+1  :  0  0  1  0  0  0  0  0  (0x20, with only 3 valid bits)
 5.  The cryptographic hash algorithm and eXtendable-Output Function (XOF) in 
-    implementations shall use the auxiliary functions. These auxiliary functions
-    are only used to verify the correctness of implementations and preliminarily
-    evaluate performance, without considering security. In the subsequent 
-    evaluation rounds, these will be replaced with new auxiliary functions based
-    on new cryptographic hash algorithms.
+    implementations are SHA3-256 and SHAKE256 (FIPS 202), provided by
+    "common/fips202.c". Randomness is obtained from "common/randombytes.c".
 6.  The files of KEX are only suitable for 2-pass and 3-pass key exchange 
     protocols. If the submitted key exchange protocol requires more passes, 
     modify "KAT_KEX.c" and refer to the given programming interface to implement
@@ -76,12 +65,12 @@ KEX_AlgorithmInstance.h     Header file of KEX protocol (programming interface)
 
 1.  Overview
 
-    This directory contains the portable SM3-based implementation of ZEN for
+    This directory contains the SHA3/SHAKE-based implementation of ZEN for
     the 128-bit security level.
 
-    Implementation family: SM3
+    Implementation family: Keccak (FIPS 202)
     Security level: 128-bit security level
-    Symmetric primitive: SM3
+    Symmetric primitive: SHA3-256 / SHAKE256
     Vectorization: Portable C
 
     Please refer to "params.h" and the local parameter files for the exact

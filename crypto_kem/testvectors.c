@@ -2,16 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "drng.h"
 #include "hal.h"
 #include "KEM_AlgorithmInstance.h"
-#ifdef USE_KECCAK
 #include "randombytes.h"
-#else
-DRNG_ctx drng_algorithm;
-#endif
 #define SEED_LEN_BYTES 64
-unsigned char tv_seed[SEED_LEN_BYTES];
 
 static void printbytes(const unsigned char *x, unsigned long long xlen) {
     static const char hex[] = "0123456789abcdef";
@@ -45,36 +39,16 @@ int main(void) {
     unsigned char *ss_b = malloc(ss_len);
     unsigned char seed[SEED_LEN_BYTES];
     int i;
-#ifndef USE_KECCAK
-    // DRNG_ctx for generating seed
-    DRNG_ctx drng_seed;
-#endif
 
     hal_setup(CLOCK_FAST);
     hal_send_str("==========================");
-#ifndef USE_KECCAK
-    for (int i = 0; i < SEED_LEN_BYTES / 4; i++)
-    {
-        memcpy(tv_seed + 4 * i, "seed", 4);
-    }
-    if (init_random_number(&drng_seed, tv_seed, sizeof(tv_seed)) != 0)
-    {
-        hal_send_str("drng_init_failed");
-        return -1;
-    }
-#endif
     if (pk == NULL || sk == NULL || ct == NULL || ss_a == NULL || ss_b == NULL) {
         hal_send_str("alloc_failed");
         return -1;
     }
 
     for (i = 0; i < NGCC_ITERATIONS; i++) {
-#ifdef USE_KECCAK
         randombytes(seed, SEED_LEN_BYTES);
-#else
-        get_random_number(&drng_seed, seed, SEED_LEN_BYTES*8);
-        init_random_number(&drng_algorithm, seed, SEED_LEN_BYTES);
-#endif
         printbytes(seed, SEED_LEN_BYTES);
 
         kem_keygen(pk, &ignored_len, sk, &ignored_len);

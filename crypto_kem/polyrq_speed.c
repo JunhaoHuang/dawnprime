@@ -5,7 +5,6 @@
 #include "hal.h"
 #include "sendfn.h"
 #include "KEM_AlgorithmInstance.h"
-#include "drng.h"
 #include "poly.h"
 #include "params.h"
 #include "ntt.h"

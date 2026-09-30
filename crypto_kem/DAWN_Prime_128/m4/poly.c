@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include "params.h"
-#include "auxfunc.h"
 #include "sample.h"
 #include "symmetric.h"
 #include "radix16_r2.h"

@@ -5,7 +5,7 @@ Usage:
     python3 build_schemes.py
     python3 build_schemes.py all
     python3 build_schemes.py PLATFORM=mps2-an386 DKE-128 DKE-512
-    python3 build_schemes.py PLATFORM=nucleo-l4r5zi DKE-128 USE_SM3_ASM=1 -j8
+    python3 build_schemes.py PLATFORM=nucleo-l4r5zi DAWN_Prime_128 LTO=1 -j8
     python3 build_schemes.py PLATFORM=stm32f4discovery DKE-128 DKE-512
 
 The script mirrors the implementation/app discovery used by mk/scheme.mk:

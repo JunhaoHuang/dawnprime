@@ -23,8 +23,6 @@ Q ?=
 OPT ?= speed
 LTO ?= 0
 NGCC_ITERATIONS ?= 100
-USE_SM3_ASM ?= 1
-USE_KECCAK ?= 0
 DKEX_SIG_MLDSA_LEVEL ?= 2
 
 CROSS_PREFIX ?= arm-none-eabi
@@ -39,20 +37,6 @@ CPPFLAGS += -I$(CURDIR)
 CPPFLAGS += -DNGCC_ITERATIONS=$(NGCC_ITERATIONS)
 CFLAGS += -ffunction-sections -fdata-sections -fomit-frame-pointer -Wpedantic -Wall -Wextra -std=c99 
 LDFLAGS += -Wl,--gc-sections -u,__wrap__sbrk
-
-ifeq ($(USE_SM3_ASM),1)
-CFLAGS += -DSM3_ASM
-CPPFLAGS += -DSM3_ASM
-else ifneq ($(USE_SM3_ASM),0)
-$(error Unsupported USE_SM3_ASM '$(USE_SM3_ASM)'; use 0 or 1)
-endif
-
-ifeq ($(USE_KECCAK),1)
-CFLAGS += -DUSE_KECCAK
-CPPFLAGS += -DUSE_KECCAK
-else ifneq ($(USE_KECCAK),0)
-$(error Unsupported USE_KECCAK '$(USE_KECCAK)'; use 0 or 1)
-endif
 
 ifeq ($(OPT),size)
 CFLAGS += -Os
@@ -70,25 +54,16 @@ LDFLAGS += -flto
 endif
 
 COMMON_LIB_SRCS := \
-	common/sm3_bit_compress_asm_fp.S \
-	common/auxfunc.c \
-	common/auxfunc.h \
-	common/drng.c \
-	common/drng.h \
 	common/hal.h \
 	common/sendfn.h \
 	common/internal-sha256.h \
 	common/sha256_armv7m.S \
-
-ifeq ($(USE_KECCAK),1)
-COMMON_LIB_SRCS += \
 	common/fips202.c \
 	common/fips202.h \
 	common/keccakf1600.S \
 	common/keccakf1600.h \
 	common/randombytes.c \
 	common/randombytes.h
-endif
 
 ENTRY_kem := KEM_AlgorithmInstance.c
 ENTRY_kex := KEX_AlgorithmInstance.c

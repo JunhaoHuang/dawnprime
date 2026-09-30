@@ -14,17 +14,8 @@
 #define STACK_SIZE_INCR 0x1000
 #endif
 
-#ifdef USE_KECCAK
 #include "randombytes.h"
-#else
-#include "drng.h"
-DRNG_ctx drng_algorithm;
-#endif
 
-static unsigned char stack_seed[] = {
-    0x6e, 0x67, 0x63, 0x63, 0x6d, 0x34, 0x2d, 0x73,
-    0x74, 0x61, 0x63, 0x6b, 0x2d, 0x73, 0x65, 0x65, 0x64
-};
 
 static unsigned int canary_size;
 static volatile unsigned char *p;
@@ -139,12 +130,6 @@ int main(void) {
         return -1;
     }
 
-#ifndef USE_KECCAK
-    if (init_random_number(&drng_algorithm, stack_seed, sizeof(stack_seed)) != 0) {
-        hal_send_str("drng_init_failed");
-        return -1;
-    }
-#endif
 
     while (test_keys(pk, sk, ct, ss_a, ss_b) != 0) {
         if (canary_size == MAX_STACK_SIZE) {

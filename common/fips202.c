@@ -15,6 +15,12 @@
 #define NROUNDS 24
 #define ROL(a, offset) (((a) << (offset)) ^ ((a) >> (64 - (offset))))
 
+/* The build system defines HASHING_PROFILE for the `hashing` app; the hooks
+ * below use pqm4's PROFILE_HASHING name. */
+#if defined(HASHING_PROFILE) && !defined(PROFILE_HASHING)
+#define PROFILE_HASHING
+#endif
+
 #ifdef PROFILE_HASHING
 #include "hal.h"
 extern unsigned long long hash_cycles;

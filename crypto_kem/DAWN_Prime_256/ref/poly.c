@@ -8,7 +8,6 @@ File Description: Declares the ZEN key-encapsulation mechanism layer for the opt
 #include <stdio.h>
 #include <string.h>
 #include "params.h"
-#include "auxfunc.h"
 #include "sample.h"
 #include "symmetric.h"
 

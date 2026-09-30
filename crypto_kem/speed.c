@@ -5,18 +5,9 @@
 #include "hal.h"
 #include "sendfn.h"
 #include "KEM_AlgorithmInstance.h"
-#ifdef USE_KECCAK
 #include "randombytes.h"
-#else
-#include "drng.h"
-DRNG_ctx drng_algorithm;
-#endif
 
 
-static const unsigned char speed_seed[] = {
-    0x6e, 0x67, 0x63, 0x63, 0x6d, 0x34, 0x2d, 0x73,
-    0x70, 0x65, 0x65, 0x64, 0x2d, 0x73, 0x65, 0x65, 0x64
-};
 
 static void fail_and_halt(const char *reason) {
     hal_send_str(reason);
@@ -47,12 +38,6 @@ int main(void) {
 
     hal_setup(CLOCK_BENCHMARK);
     hal_send_str("==========================");
-#ifndef USE_KECCAK
-    if (init_random_number(&drng_algorithm, speed_seed, sizeof(speed_seed)) != 0)
-    {
-        fail_and_halt("drng_init_failed");
-    }
-#endif
    
 
     pk = malloc(pk_len);

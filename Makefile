@@ -21,7 +21,7 @@ $(SHORT_TARGETS): %: platform-sync bin/%.bin
 
 platform-sync:
 	@prev=''; \
-	current='PLATFORM=$(PLATFORM) OPT=$(OPT) LTO=$(LTO) NGCC_ITERATIONS=$(NGCC_ITERATIONS) USE_SM3_ASM=$(USE_SM3_ASM) USE_KECCAK=$(USE_KECCAK)$(if $(strip $(DKEX_SIG_MLDSA_BUILD_CONFIG)), $(DKEX_SIG_MLDSA_BUILD_CONFIG))'; \
+	current='PLATFORM=$(PLATFORM) OPT=$(OPT) LTO=$(LTO) NGCC_ITERATIONS=$(NGCC_ITERATIONS)$(if $(strip $(DKEX_SIG_MLDSA_BUILD_CONFIG)), $(DKEX_SIG_MLDSA_BUILD_CONFIG))'; \
 	if [ -f $(PLATFORM_STATE) ]; then \
 		prev=$$(cat $(PLATFORM_STATE)); \
 	fi; \
