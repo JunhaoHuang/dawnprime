@@ -189,13 +189,16 @@ Notes:
   an external USB-to-UART adapter wired to `USART2` on `PA2` (TX) / `PA3` (RX)
   at 38400 baud.
 
-### Build Script
+### Building and Benchmarking Scripts
 
-The repository provides a Python helper script for batch builds:
+The repository provides Python helper scripts for batch builds and benchmark collection:
 
 - `build_schemes.py`: discovers implementations for selected schemes and builds every app available in the corresponding family directory.
+- `benchmark_schemes.py`: runs the benchmark apps (`speed`, `stack`, `hashing`, and optionally `polyrq_speed`, `polyr2_speed`), captures their output, and writes benchmark summaries.
+- `benchmark_to_latex.py`: averages the raw logs in `Out/` and emits LaTeX commands and paper tables.
+- `average.py`: quick per-file summary of keypair/encaps/decaps cycles and Keccak hash cycles.
 
-The script must be run from the repository root:
+The scripts must be run from the repository root:
 
 ```bash
 cd dawnprime
@@ -209,7 +212,7 @@ nucleo-l4r5zi
 stm32f4discovery
 ```
 
-Other `PLATFORM` values are rejected by the script.
+Other `PLATFORM` values are rejected by the scripts.
 
 #### Batch Builds
 
@@ -231,6 +234,87 @@ python3 build_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME} LTO=1 NGCC_ITERATI
 
 The script searches `crypto_kem`, `crypto_kex`, and `crypto_sign`. An implementation is detected when the implementation directory contains the family entry file, for example `KEM_AlgorithmInstance.c` for KEM schemes.
 
+#### Benchmark Runs
+
+Run the default benchmark apps, `speed`, `stack`, and `hashing`, for all implementations of selected schemes. Omit scheme names or use `all` to benchmark every discovered scheme:
+
+```bash
+python3 benchmark_schemes.py
+python3 benchmark_schemes.py all
+python3 benchmark_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME...} --apps speed hashing
+python3 benchmark_schemes.py PLATFORM=stm32f4discovery {SCHEME_NAME...} --apps speed hashing
+python3 benchmark_schemes.py PLATFORM=mps2-an386 {SCHEME_NAME...} --apps speed hashing
+```
+
+Select a subset of apps with `--apps`. The polynomial kernel apps are opt-in:
+
+```bash
+python3 benchmark_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME...} --apps speed
+python3 benchmark_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME...} --apps speed stack hashing polyrq_speed polyr2_speed
+```
+
+Forward make variables after `PLATFORM=...` as usual:
+
+```bash
+python3 benchmark_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME...} LTO=1 NGCC_ITERATIONS=100 -j8
+```
+
+For `mps2-an386`, the benchmark script runs each target through QEMU:
+
+```bash
+make PLATFORM=mps2-an386 <target> qemu-run
+```
+
+For `nucleo-l4r5zi`, the script builds each target, flashes it with:
+
+```bash
+openocd -f st_nucleo_l4r5.cfg -c "program <elf> verify reset exit"
+```
+
+For `stm32f4discovery`, the script builds each target and flashes it with the
+OpenOCD-provided ST-Link and STM32F4 target configs:
+
+```bash
+openocd -f interface/stlink.cfg -f target/stm32f4x.cfg -c "program <elf> verify reset exit"
+```
+
+Hardware benchmark output is captured from the serial port until the `#` completion marker is received. By default the script uses `/dev/ttyACM0` on Linux and `/dev/tty.usbserial-0001` on macOS, at 38400 baud. Override these when needed:
+
+```bash
+python3 benchmark_schemes.py PLATFORM=nucleo-l4r5zi {SCHEME_NAME...} --serial-port /dev/ttyACM1 --baud 38400
+```
+
+Benchmark outputs are written to:
+
+```text
+Out/benchmark_summary.csv
+Out/benchmark_summary.md
+Out/benchmark_raw/<target>.run<N>.txt
+```
+
+The CSV keeps raw metric names for post-processing. The Markdown summary is grouped by family and app. The `speed`, `polyrq_speed`, and `polyr2_speed` tables report average, median, minimum, and maximum. The `stack` table reports average only. The `hashing` table reports the cycles spent inside the Keccak primitives (SHA3-256 / SHAKE256) per operation and their share of the total operation cycles:
+
+```text
+average(<operation>_hash_cycles) / average(<operation>_cycles) * 100
+```
+
+Notes:
+
+- Compare benchmark numbers only within the same platform. QEMU `mps2-an386` timings are useful for automation and regression checks, but they are not cycle-accurate hardware measurements.
+- Hardware benchmark runs require `openocd`, a connected board, and a readable serial device (`pyserial`).
+- Use `--dry-run` to inspect the generated build, flash, and run commands without executing them.
+- Use `--runs N` to repeat each target and aggregate samples in the summaries.
+
+#### LaTeX Export
+
+`benchmark_to_latex.py` averages every completed log under `Out/` (the raw logs from `benchmark_schemes.py` plus manually captured `Out/polyrq_speed_crypto_kem_<scheme>_<impl>.txt` and `Out/polyr2_speed_...txt` files) and writes `Out/benchmark_results.tex` with one `\newcommand` per measurement and the paper tables for the $R_q$ kernels, the $R_2$ kernels, the complete KEM, and the Keccak share per operation:
+
+```bash
+python3 benchmark_to_latex.py
+python3 benchmark_to_latex.py --input-dir Out --output Out/benchmark_results.tex
+python3 -m unittest test_benchmark_to_latex
+```
+
 ## Symmetric Primitives
 
 All implementations use Keccak-based primitives from `common/`:
@@ -243,7 +327,7 @@ common/randombytes.c    Randomness source (hardware RNG on STM32 boards, determi
 
 The SM3-based auxiliary functions and DRNG from the original NGCC template are not part of this repository.
 
-Benchmark apps (`speed`, `stack`, `hashing`, `polyr2_speed`, `polyrq_speed`) can be run manually, for example:
+Benchmark apps (`speed`, `stack`, `hashing`, `polyr2_speed`, `polyrq_speed`) can also be run manually, for example:
 
 ```bash
 make PLATFORM=mps2-an386 crypto_kem_DAWN_Prime_128_m4_speed qemu-run -j1
