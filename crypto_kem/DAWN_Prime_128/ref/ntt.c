@@ -14,11 +14,25 @@ int16_t montgomery_reduce(int32_t a)
     int32_t t;
     int16_t u;
 
-    u = a * QINV;
+    /* Only the low 16 bits of a*QINV are needed; compute them with unsigned
+     * (wrapping) arithmetic so that large |a| does not overflow int32. */
+    u = (int16_t)(uint16_t)((uint32_t)a * (uint32_t)QINV);
     t = (int32_t)u * ZEN_Q;
     t = a - t;
     t >>= 16;
     return t;
+}
+
+/// @brief Barrett reduction modulo ZEN_Q
+/// @param[in] a Any int16_t value
+/// @return r with r = a (mod ZEN_Q) and -ZEN_Q/2 <= r <= ZEN_Q/2
+static inline int16_t barrett_reduce(int16_t a)
+{
+    int32_t t;
+    const int32_t v = ((1 << 26) + ZEN_Q / 2) / ZEN_Q;
+
+    t = (v * a + (1 << 25)) >> 26;
+    return (int16_t)(a - t * ZEN_Q);
 }
 
 /// @brief Multiply two coefficients in the finite field modulo ZEN_Q using Montgomery reduction
@@ -92,7 +106,11 @@ void poly_intt(int16_t *a)
             for(j = start; j < start + len; j++) 
             {
                 t = a[j];
-                a[j] = (t + a[j + len]);
+                /* The sum path is never multiplied (and thus never reduced)
+                 * inside the butterflies, so without this reduction it can
+                 * double per layer and overflow int16_t. Barrett keeps it in
+                 * [-ZEN_Q/2, ZEN_Q/2] at every layer. */
+                a[j] = barrett_reduce(t + a[j + len]);
                 a[j + len] = t - a[j + len];
                 a[j + len] = fqmul(zeta, a[j + len]);
             }
